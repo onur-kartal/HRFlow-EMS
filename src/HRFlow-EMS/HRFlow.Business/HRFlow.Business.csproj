@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HRFlow.Common\HRFlow.Common.csproj" />
+    <ProjectReference Include="..\HRFlow.Data\HRFlow.Data.csproj" />
+    <ProjectReference Include="..\HRFlow.Entities\HRFlow.Entities.csproj" />
+  </ItemGroup>
+
+</Project>
