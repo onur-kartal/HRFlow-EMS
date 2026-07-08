@@ -1,7 +1,14 @@
+using HRFlow.Data.Context;
+using HRFlow.Web.Extensions;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+//bu kýsýmdan sonrasýný ben ekledim.
+builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
 
