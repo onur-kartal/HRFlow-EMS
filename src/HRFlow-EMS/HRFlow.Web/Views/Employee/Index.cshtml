@@ -1,0 +1,25 @@
+﻿@model List<HRFlow.Business.DTOs.Employee.EmployeeListDto>
+
+<h2>Çalışanlar</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Departman</th>
+            <th>Pozisyon</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.FullName</td>
+                <td>@item.DepartmentName</td>
+                <td>@item.PositionName</td>
+            </tr>
+        }
+
+    </tbody>
+</table>

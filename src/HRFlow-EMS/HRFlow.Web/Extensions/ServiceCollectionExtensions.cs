@@ -1,7 +1,9 @@
 ﻿using HRFlow.Business.Interfaces;
+using HRFlow.Business.Mappings;
 using HRFlow.Business.Services;
 using HRFlow.Common.Interfaces;
 using HRFlow.Data.Context;
+using HRFlow.Data.Interfaces;
 using HRFlow.Data.Repositories;
 using HRFlow.Entities.HumanResources;
 using HRFlow.Entities.Organization;
@@ -28,11 +30,13 @@ namespace HRFlow.Web.Extensions
             services.AddScoped<IGenericRepository<Employee>, EmployeeRepository>();
             services.AddScoped<IGenericRepository<Department>, DepartmentRepository>();
             services.AddScoped<IGenericRepository<Position>, PositionRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IPositionService, PositionService>();
 
+            services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
             return services;
         }
     }

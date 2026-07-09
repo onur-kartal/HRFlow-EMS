@@ -1,4 +1,5 @@
-﻿using HRFlow.Entities.HumanResources;
+﻿using HRFlow.Business.DTOs.Employee;
+using HRFlow.Entities.HumanResources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace HRFlow.Business.Interfaces
 {
     public interface IEmployeeService : IGenericService<Employee>
     {
-
+        Task<List<EmployeeListDto>> GetEmployeeListAsync();
     }
 }
