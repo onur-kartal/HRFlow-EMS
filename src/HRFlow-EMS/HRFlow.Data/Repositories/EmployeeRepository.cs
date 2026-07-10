@@ -20,9 +20,10 @@ namespace HRFlow.Data.Repositories
         public async Task<List<Employee>> GetEmployeeListAsync()
         {
             return await _context.Employees
-        .Include(x => x.Department)
-        .Include(x => x.Position)
-        .ToListAsync();
+                .Where(x => !x.IsDeleted)
+                .Include(x => x.Department)
+                .Include(x => x.Position)
+                .ToListAsync();
         }
     }
 }

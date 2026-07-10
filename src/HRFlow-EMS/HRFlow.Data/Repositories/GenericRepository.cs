@@ -1,5 +1,6 @@
 ﻿using HRFlow.Common.Interfaces;
 using HRFlow.Data.Context;
+using HRFlow.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -47,7 +48,13 @@ namespace HRFlow.Data.Repositories
 
         public void Delete(T entity)
         {
-            _dbSet.Remove(entity);
+            if (entity is BaseEntity baseEntity)
+            {
+                baseEntity.IsDeleted = true;
+                baseEntity.DeletedDate = DateTime.UtcNow;
+            }
+
+            _dbSet.Update(entity);
         }
 
         public async Task SaveChangesAsync()

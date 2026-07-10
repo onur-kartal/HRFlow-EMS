@@ -28,6 +28,10 @@ namespace HRFlow.Business.Mappings
             CreateMap<EmployeeUpdateDto, Employee>();
 
             CreateMap<Employee, EmployeeUpdateDto>();
+
+            CreateMap<Employee, EmployeeUpdateDto>();
+
+            CreateMap<EmployeeUpdateDto, Employee>();
         }
     }
 }

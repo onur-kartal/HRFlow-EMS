@@ -1,0 +1,14 @@
+﻿using HRFlow.Business.DTOs.Employee;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace HRFlow.Web.Models.Employee
+{
+    public class EmployeeCreateViewModel
+    {
+        public EmployeeCreateDto Employee { get; set; } = new();
+
+        public List<SelectListItem> Departments { get; set; } = new();
+
+        public List<SelectListItem> Positions { get; set; } = new();
+    }
+}
