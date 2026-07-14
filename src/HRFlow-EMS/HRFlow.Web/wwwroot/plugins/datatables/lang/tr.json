@@ -1,0 +1,17 @@
+{
+  "emptyTable": "Tabloda herhangi bir veri bulunmamaktadır",
+  "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+  "infoEmpty": "Kayıt bulunamadı",
+  "infoFiltered": "(_MAX_ kayıt içerisinden filtrelendi)",
+  "lengthMenu": "_MENU_ kayıt göster",
+  "loadingRecords": "Yükleniyor...",
+  "processing": "İşleniyor...",
+  "search": "Ara:",
+  "zeroRecords": "Eşleşen kayıt bulunamadı",
+  "paginate": {
+    "first": "İlk",
+    "last": "Son",
+    "next": "Sonraki",
+    "previous": "Önceki"
+  }
+}

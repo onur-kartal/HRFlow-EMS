@@ -7,11 +7,37 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\adminlte\.github\assets\dashboard-dark.png" />
+    <Content Include="wwwroot\adminlte\.github\assets\dashboard-light.png" />
+    <Content Include="wwwroot\adminlte\.github\assets\premium\admindek.png" />
+    <Content Include="wwwroot\adminlte\.github\assets\premium\apex.png" />
+    <Content Include="wwwroot\adminlte\.github\assets\premium\haze.png" />
+    <Content Include="wwwroot\adminlte\.github\assets\premium\zenith.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\adminlte\.github\codeql\codeql-config.yml" />
+    <None Include="wwwroot\adminlte\.github\CONTRIBUTING.md" />
+    <None Include="wwwroot\adminlte\.github\dependabot.yml" />
+    <None Include="wwwroot\adminlte\.github\FUNDING.yml" />
+    <None Include="wwwroot\adminlte\.github\ISSUE_TEMPLATE\bug-report-for-adminlte-v3.1-x.md" />
+    <None Include="wwwroot\adminlte\.github\ISSUE_TEMPLATE\feature-request-for-adminlte-v4-x.md" />
+    <None Include="wwwroot\adminlte\.github\workflows\a11y.yml" />
+    <None Include="wwwroot\adminlte\.github\workflows\bundlewatch.yml" />
+    <None Include="wwwroot\adminlte\.github\workflows\codeql.yml" />
+    <None Include="wwwroot\adminlte\.github\workflows\docs.yml" />
+    <None Include="wwwroot\adminlte\.github\workflows\lint.yml" />
+    <None Include="wwwroot\adminlte\.github\workflows\node-sass.yml" />
+    <None Include="wwwroot\adminlte\.github\workflows\release.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.17">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.17" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
   </ItemGroup>
 
   <ItemGroup>

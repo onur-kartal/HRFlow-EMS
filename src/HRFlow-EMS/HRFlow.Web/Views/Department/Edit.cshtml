@@ -1,0 +1,28 @@
+﻿@model HRFlow.Web.Models.Department.DepartmentEditViewModel
+
+<h2>Departmanı Düzenle</h2>
+
+<form asp-action="Edit" method="post">
+    <input asp-for="Department.Id" type="hidden" />
+    <div class="mb-3">
+        <label>Departman Adı</label>
+        <input asp-for="Department.Name" class="form-control" />
+        <span asp-validation-for="Department.Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Departman açıklaması</label>
+        <input asp-for="Department.Description" class="form-control" />
+        <span asp-validation-for="Department.Description" class="text-danger"></span>
+    </div>
+
+    <button class="btn btn-primary">
+        Kaydet
+    </button>
+
+</form>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

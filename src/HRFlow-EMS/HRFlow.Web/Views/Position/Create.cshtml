@@ -1,0 +1,28 @@
+﻿@model HRFlow.Web.Models.Position.PositionCreateModel
+
+<h2>Yeni Pozisyon</h2>
+
+<form asp-action="Create" method="post">
+
+    <div class="mb-3">
+        <label>Pozisyon Adı</label>
+        <input asp-for="Position.Name" class="form-control" />
+        <span asp-validation-for="Position.Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Pozisyon açıklaması</label>
+        <input asp-for="Position.Description" class="form-control" />
+        <span asp-validation-for="Position.Description" class="text-danger"></span>
+    </div>
+
+    <button class="btn btn-primary">
+        Kaydet
+    </button>
+
+</form>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

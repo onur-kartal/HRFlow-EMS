@@ -38,11 +38,19 @@ namespace HRFlow.Data.Repositories
 
         public async Task AddAsync(T entity)
         {
+            if (entity is BaseEntity baseEntity)
+            {
+                baseEntity.CreatedDate = DateTime.UtcNow;
+            }
             await _dbSet.AddAsync(entity);
         }
 
         public void Update(T entity)
         {
+            if (entity is BaseEntity baseEntity)
+            {
+                baseEntity.UpdatedDate = DateTime.UtcNow;
+            }
             _dbSet.Update(entity);
         }
 

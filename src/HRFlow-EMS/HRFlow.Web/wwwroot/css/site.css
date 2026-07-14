@@ -17,9 +17,6 @@ html {
   min-height: 100%;
 }
 
-body {
-  margin-bottom: 60px;
-}
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
@@ -28,4 +25,46 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+/*buradan sonrasý kendi eklediklerim*/
+.dt-layout-row {
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+div.dt-container .dt-layout-row:first-child {
+    margin-bottom: 12px;
+}
+
+div.dt-container .dt-layout-row:last-child {
+    margin-top: 12px;
+}
+
+div.dt-search input {
+    width: 220px;
+    margin-right: 10px;
+}
+.dt-length {
+    margin-left: 10px;
+}
+.dt-info {
+    margin-left: 10px;
+}
+.dt-paging {
+    padding-right: 10px;
+}
+.table td:last-child,
+.table th:last-child {
+    white-space: nowrap;
+    text-align: center;
+}
+    .table td:last-child .btn {
+        min-width: 70px;
+    }
+
+.app-main {
+    height: auto !important;
+}
+.app-wrapper {
+    min-height: auto !important;
 }

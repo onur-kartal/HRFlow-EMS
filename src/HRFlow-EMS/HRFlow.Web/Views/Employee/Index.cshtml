@@ -1,52 +1,118 @@
 ﻿@model List<HRFlow.Business.DTOs.Employee.EmployeeListDto>
 
-<h2>Çalışanlar</h2>
+            <div class="card-header">
+                <div class="row align-items-center">
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Ad Soyad</th>
-            <th>Departman</th>
-            <th>Pozisyon</th>
-            <th>İşlemler</th>
-        </tr>
-    </thead>
-    <tbody>
+                    <div class="col">
+                        <h3 class="card-title mb-0">Personeller</h3>
+                    </div>
 
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.FullName</td>
-                <td>@item.DepartmentName</td>
-                <td>@item.PositionName</td>
-                <td>
-                    <a asp-action="Edit"
-                       asp-route-id="@item.Id"
-                       class="btn btn-warning btn-sm">
-                        Düzenle
-                    </a>
+                    <div class="col-auto">
+                        <a asp-action="Create" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle"></i>
+                            Yeni Personel
+                        </a>
+                    </div>
 
-                    <form asp-action="Delete"
-                          asp-route-id="@item.Id"
-                          method="post"
-                          style="display:inline;"
-                          class="delete-form">
+                </div>
+            </div>
 
-                        <button type="submit"
-                                class="btn btn-danger btn-sm">
-                            Sil
-                        </button>
+            <div class="card-body p-0">
 
-                    </form>
-                </td>
-            </tr>
-        }
+                <table id="employeeTable" class="table table-bordered table-striped table-hover align-middle">
 
-    </tbody>
-</table>
+                    <thead>
+                        <tr>
+                            <th>Ad Soyad</th>
+                            <th>Departman</th>
+                            <th>Pozisyon</th>
+                            <th class="text-center" style="width:180px;">İşlemler</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>@item.FullName</td>
+
+                                    <td>@item.DepartmentName</td>
+
+                                    <td>@item.PositionName</td>
+
+                                    <td class="text-center">
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-warning btn-sm me-1">
+
+                                            <i class="bi bi-pencil-square"></i>
+                                            Düzenle
+
+                                        </a>
+
+                                        <form asp-action="Delete"
+                                              asp-route-id="@item.Id"
+                                              method="post"
+                                              class="d-inline delete-form">
+
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm">
+
+                                                <i class="bi bi-trash"></i>
+                                                Sil
+
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    Kayıtlı personel bulunamadı.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
 @section Scripts
 {
     <script>
+        initializeDataTable('#employeeTable', {
+
+            columnDefs: [
+
+                { width: "35%", targets: 0 },
+
+                { width: "25%", targets: 1 },
+
+                { width: "25%", targets: 2 },
+
+                {
+                    width: "15%",
+                    targets: 3,
+                    orderable: false
+                }
+
+            ]
+
+        });
         document.querySelectorAll(".delete-form").forEach(form => {
 
             form.addEventListener("submit", function (e) {

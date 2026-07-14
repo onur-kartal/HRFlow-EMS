@@ -19,14 +19,14 @@ namespace HRFlow.Business.Services
 
         private readonly IMapper _mapper;
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly IGenericRepository<Department> _departmentRepository;
-        private readonly IGenericRepository<Position> _positionRepository;
+        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IPositionRepository _positionRepository;
 
         public EmployeeService(
          IGenericRepository<Employee> repository,
          IEmployeeRepository employeeRepository,
-         IGenericRepository<Department> departmentRepository,
-         IGenericRepository<Position> positionRepository,
+         IDepartmentRepository departmentRepository,
+         IPositionRepository positionRepository,
          IMapper mapper)
          : base(repository)
         {
@@ -53,12 +53,12 @@ namespace HRFlow.Business.Services
         }
         public async Task<List<Department>> GetDepartmentsAsync()
         {
-            return await _departmentRepository.GetAllAsync();
+            return await _departmentRepository.GetDepartmentListAsync();
         }
 
         public async Task<List<Position>> GetPositionsAsync()
         {
-            return await _positionRepository.GetAllAsync();
+            return await _positionRepository.GetPositionListAsync();
         }
 
         public async Task<EmployeeUpdateDto?> GetByIdForUpdateAsync(int id)

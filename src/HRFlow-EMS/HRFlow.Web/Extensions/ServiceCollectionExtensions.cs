@@ -31,6 +31,8 @@ namespace HRFlow.Web.Extensions
             services.AddScoped<IGenericRepository<Department>, DepartmentRepository>();
             services.AddScoped<IGenericRepository<Position>, PositionRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IPositionRepository, PositionRepository>();
 
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IDepartmentService, DepartmentService>();

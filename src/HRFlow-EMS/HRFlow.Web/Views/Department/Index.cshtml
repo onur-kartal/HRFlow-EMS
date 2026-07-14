@@ -1,0 +1,122 @@
+﻿@model List<HRFlow.Business.DTOs.Department.DepartmentListDto>
+
+
+            <div class="card-header">
+                <div class="row align-items-center">
+
+                    <div class="col">
+                        <h3 class="card-title mb-0">Departmanlar</h3>
+                    </div>
+
+                    <div class="col-auto">
+                        <a asp-action="Create" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle"></i>
+                            Yeni Departman
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+
+                <table id="departmentTable" class="table table-bordered table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Departman Adı</th>
+                            <th>Departman açıklaması</th>
+                            <th>İşlemler</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Description</td>
+
+                                <td class="text-center">
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-warning btn-sm me-1">
+
+                                        <i class="bi bi-pencil-square"></i>
+                                        Düzenle
+
+                                    </a>
+
+                                    <form asp-action="Delete"
+                                          asp-route-id="@item.Id"
+                                          method="post"
+                                          class="d-inline delete-form">
+
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm">
+
+                                            <i class="bi bi-trash"></i>
+                                            Sil
+
+                                        </button>
+
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+
+            </div>
+
+
+@section Scripts
+{
+    <script>
+                initializeDataTable('#departmentTable', {
+
+            columnDefs: [
+
+                { width: "35%", targets: 0 },
+
+                { width: "50%", targets: 1 },
+
+                {
+                    width: "15%",
+                    targets: 2,
+                    orderable: false
+                }
+
+            ]
+
+        });
+        document.querySelectorAll(".delete-form").forEach(form => {
+
+            form.addEventListener("submit", function (e) {
+
+                e.preventDefault();
+
+                Swal.fire({
+                    title: "Emin misiniz?",
+                    text: "Bu departman silinecek.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Evet, Sil",
+                    cancelButtonText: "İptal",
+                    reverseButtons: true
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+
+                });
+
+            });
+
+        });
+    </script>
+}
