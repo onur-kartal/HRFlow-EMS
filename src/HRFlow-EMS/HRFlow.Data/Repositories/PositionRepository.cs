@@ -10,11 +10,18 @@ using System.Threading.Tasks;
 
 namespace HRFlow.Data.Repositories
 {
-    public class PositionRepository : GenericRepository<Position>,IPositionRepository
+    public class PositionRepository : GenericRepository<Position>, IPositionRepository
     {
         public PositionRepository(HRFlowDbContext context)
            : base(context)
         {
+        }
+
+        public async Task<int> GetPositionCountAsync()
+        {
+            return await _context.Positions
+                    .Where(x => !x.IsDeleted)
+                    .CountAsync();
         }
 
         public async Task<List<Position>> GetPositionListAsync()

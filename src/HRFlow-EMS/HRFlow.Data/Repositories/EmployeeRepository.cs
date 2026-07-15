@@ -17,12 +17,47 @@ namespace HRFlow.Data.Repositories
         {
         }
 
+        public async Task<int> GetEmployeeCountAsync()
+        {
+            return await _context.Employees
+                .Where(x => !x.IsDeleted)
+                .CountAsync();
+        }
+
         public async Task<List<Employee>> GetEmployeeListAsync()
         {
             return await _context.Employees
                 .Where(x => !x.IsDeleted)
                 .Include(x => x.Department)
                 .Include(x => x.Position)
+                .ToListAsync();
+        }
+
+        public async Task<List<Employee>> GetLastEmployeesAsync(int count)
+        {
+            return await EmployeeDetailQuery()
+                .OrderByDescending(x => x.CreatedDate)
+                .Take(count)
+                .ToListAsync();
+        }
+        private IQueryable<Employee> EmployeeQuery()
+        {
+            return _context.Employees
+                .Where(x => !x.IsDeleted);
+        }
+
+        private IQueryable<Employee> EmployeeDetailQuery()
+        {
+            return EmployeeQuery()
+                .Include(x => x.Department)
+                .Include(x => x.Position);
+        }
+
+        public async Task<List<Employee>> GetEmployeesWithDepartmentAsync()
+        {
+            return await _context.Employees
+                .Where(x => !x.IsDeleted)
+                .Include(x => x.Department)
                 .ToListAsync();
         }
     }

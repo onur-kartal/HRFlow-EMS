@@ -12,5 +12,6 @@ namespace HRFlow.Data.Interfaces
     public interface IDepartmentRepository :IGenericRepository<Department>
     {
         Task<List<Department>> GetDepartmentListAsync();
+        Task<int> GetDepartmentCountAsync();
     }
 }

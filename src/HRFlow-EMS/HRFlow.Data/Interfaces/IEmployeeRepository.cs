@@ -11,5 +11,8 @@ namespace HRFlow.Data.Interfaces
     public interface IEmployeeRepository : IGenericRepository<Employee>
     {
         Task<List<Employee>> GetEmployeeListAsync();
+        Task<int> GetEmployeeCountAsync();
+        Task<List<Employee>> GetLastEmployeesAsync(int count);
+        Task<List<Employee>> GetEmployeesWithDepartmentAsync();
     }
 }

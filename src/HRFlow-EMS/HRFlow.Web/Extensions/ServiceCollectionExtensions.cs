@@ -38,6 +38,8 @@ namespace HRFlow.Web.Extensions
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IPositionService, PositionService>();
 
+            services.AddScoped<IDashboardService, DashboardService>();
+
             services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
             return services;
         }

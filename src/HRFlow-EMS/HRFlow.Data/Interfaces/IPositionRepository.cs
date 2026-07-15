@@ -11,5 +11,6 @@ namespace HRFlow.Data.Interfaces
     public interface IPositionRepository: IGenericRepository<Position>
     {
         Task<List<Position>> GetPositionListAsync();
+        Task<int> GetPositionCountAsync();
     }
 }

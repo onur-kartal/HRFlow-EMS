@@ -68,3 +68,23 @@ div.dt-search input {
 .app-wrapper {
     min-height: auto !important;
 }
+.dashboard-card-link {
+    text-decoration: none;
+    display: block;
+    color: inherit;
+}
+
+    .dashboard-card-link:hover {
+        color: inherit;
+    }
+.small-box {
+    transition: all .20s ease;
+}
+
+.dashboard-card-link:hover .small-box {
+    transform: translateY(-4px);
+    box-shadow: 0 .6rem 1.2rem rgba(0,0,0,.25);
+}
+.dashboard-card-link {
+    cursor: pointer;
+}

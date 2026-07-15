@@ -17,6 +17,13 @@ namespace HRFlow.Data.Repositories
         {
         }
 
+        public async Task<int> GetDepartmentCountAsync()
+        {
+            return await _context.Departments
+                .Where(x => !x.IsDeleted)
+                .CountAsync();
+        }
+
         public async Task<List<Department>> GetDepartmentListAsync()
         {
             return await _context.Departments
