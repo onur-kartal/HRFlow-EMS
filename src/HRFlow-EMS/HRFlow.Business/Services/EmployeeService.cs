@@ -84,5 +84,12 @@ namespace HRFlow.Business.Services
 
             await _repository.SaveChangesAsync();
         }
+
+        public async Task<List<EmployeeLookupDto>> GetEmployeeLookupAsync()
+        {
+            var employees = await _employeeRepository.GetEmployeeListAsync();
+
+            return _mapper.Map<List<EmployeeLookupDto>>(employees);
+        }
     }
 }

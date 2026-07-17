@@ -32,6 +32,10 @@ namespace HRFlow.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(DepartmentCreateModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
             await _departmentService.CreateAsync(model.Department);
 
             return RedirectToAction(nameof(Index));

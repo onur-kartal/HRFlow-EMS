@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using HRFlow.Business.DTOs.Department;
 using HRFlow.Business.DTOs.Employee;
+using HRFlow.Business.DTOs.LeaveRequest;
+using HRFlow.Business.DTOs.LeaveType;
 using HRFlow.Business.DTOs.Position;
 using HRFlow.Entities.HumanResources;
 using HRFlow.Entities.Organization;
@@ -36,6 +38,10 @@ namespace HRFlow.Business.Mappings
 
             CreateMap<Employee, EmployeeUpdateDto>();
 
+            CreateMap<Employee, EmployeeLookupDto>()
+                    .ForMember(dest => dest.FullName,
+                        opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
+
             //department
             CreateMap<Entities.Organization.Department, DTOs.Department.DepartmentListDto>()
                     .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
@@ -50,13 +56,34 @@ namespace HRFlow.Business.Mappings
             //position
             CreateMap<Entities.Organization.Position, DTOs.Position.PositionListDto>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dest=> dest.Description,opt=>opt.MapFrom(src => src.Description));
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
 
             CreateMap<PositionCreateDto, Position>();
 
             CreateMap<PositionUpdateDto, Position>();
 
             CreateMap<Position, PositionUpdateDto>();
+
+            //leavetype
+            CreateMap<Entities.HumanResources.LeaveType, DTOs.LeaveType.LeaveTypeListDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+            CreateMap<LeaveTypeCreateDto, LeaveType>();
+
+            CreateMap<LeaveTypeUpdateDto, LeaveType>();
+
+            CreateMap<LeaveType, LeaveTypeUpdateDto>();
+
+            CreateMap<LeaveType, LeaveTypeLookupDto>();
+
+            //leaverequest
+            CreateMap<LeaveRequest, LeaveRequestListDto>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Employee.FirstName + " " + src.Employee.LastName))
+                .ForMember(dest => dest.LeaveTypeName,opt => opt.MapFrom(src => src.LeaveType.Name))
+                .ForMember(dest => dest.TotalDays,opt => opt.MapFrom(src => (src.EndDate - src.StartDate).Days + 1));
+
+            CreateMap<LeaveRequestCreateDto, LeaveRequest>();
+
+            CreateMap<LeaveRequest, LeaveRequestUpdateDto>().ReverseMap();
         }
     }
 }

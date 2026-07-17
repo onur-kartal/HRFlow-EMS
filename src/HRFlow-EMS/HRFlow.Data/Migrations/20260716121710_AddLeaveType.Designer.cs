@@ -4,6 +4,7 @@ using HRFlow.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRFlow.Data.Migrations
 {
     [DbContext(typeof(HRFlowDbContext))]
-    partial class HRFlowDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260716121710_AddLeaveType")]
+    partial class AddLeaveType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,54 +86,6 @@ namespace HRFlow.Data.Migrations
                     b.HasIndex("PositionId");
 
                     b.ToTable("Employees");
-                });
-
-            modelBuilder.Entity("HRFlow.Entities.HumanResources.LeaveRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("LeaveTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("LeaveTypeId");
-
-                    b.ToTable("LeaveRequests");
                 });
 
             modelBuilder.Entity("HRFlow.Entities.HumanResources.LeaveType", b =>
@@ -254,25 +209,6 @@ namespace HRFlow.Data.Migrations
                     b.Navigation("Department");
 
                     b.Navigation("Position");
-                });
-
-            modelBuilder.Entity("HRFlow.Entities.HumanResources.LeaveRequest", b =>
-                {
-                    b.HasOne("HRFlow.Entities.HumanResources.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HRFlow.Entities.HumanResources.LeaveType", "LeaveType")
-                        .WithMany()
-                        .HasForeignKey("LeaveTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("LeaveType");
                 });
 
             modelBuilder.Entity("HRFlow.Entities.Organization.Department", b =>

@@ -1,16 +1,17 @@
-﻿@model List<HRFlow.Business.DTOs.Employee.EmployeeListDto>
+﻿@model List<HRFlow.Business.DTOs.LeaveType.LeaveTypeListDto>
+
 
 <div class="card-header">
     <div class="row align-items-center">
 
         <div class="col">
-            <h3 class="card-title mb-0">Personeller</h3>
+            <h3 class="card-title mb-0">İzin Türleri</h3>
         </div>
 
         <div class="col-auto">
             <a asp-action="Create" class="btn btn-primary btn-sm">
                 <i class="bi bi-plus-circle"></i>
-                Yeni Personel
+                Yeni İzin Türü
             </a>
         </div>
 
@@ -19,28 +20,33 @@
 
 <div class="card-body p-0">
 
-    <table id="employeeTable" class="table table-bordered table-striped table-hover align-middle">
-
+    <table id="leaveTypeTable" class="table table-bordered table-striped table-hover align-middle">
         <thead>
             <tr>
-                <th>Ad Soyad</th>
-                <th>Departman</th>
-                <th>Pozisyon</th>
-                <th class="text-center" style="width:180px;">İşlemler</th>
+                <th>İzin Adı</th>
+                <th>Varsayılan Gün</th>
+                <th>Ücretli mi?</th>
+                <th>İşlemler</th>
+
             </tr>
         </thead>
-
         <tbody>
 
             @foreach (var item in Model)
             {
                 <tr>
-
-                    <td>@item.FullName</td>
-
-                    <td>@item.DepartmentName</td>
-
-                    <td>@item.PositionName</td>
+                    <td>@item.Name</td>
+                    <td>@item.DefaultDays</td>
+                    <td>
+                        @if (item.IsPaid)
+                        {
+                            <span class="badge text-bg-success">Ücretli</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-danger">Ücretsiz</span>
+                        }
+                    </td>
 
                     <td class="text-center">
 
@@ -67,16 +73,13 @@
                             </button>
 
                         </form>
-
                     </td>
-
                 </tr>
             }
 
-
         </tbody>
-
     </table>
+
 
 </div>
 
@@ -84,15 +87,15 @@
 @section Scripts
 {
     <script>
-        initializeDataTable('#employeeTable', {
+        initializeDataTable('#leaveTypeTable', {
 
             columnDefs: [
 
-                { width: "35%", targets: 0 },
+                { width: "40%", targets: 0 }, // İzin Adı
 
-                { width: "25%", targets: 1 },
+                { width: "25%", targets: 1 }, // İzin Süresi
 
-                { width: "25%", targets: 2 },
+                { width: "20%", targets: 2 }, // Ücretli mi?
 
                 {
                     width: "15%",
@@ -111,7 +114,7 @@
 
                 Swal.fire({
                     title: "Emin misiniz?",
-                    text: "Bu çalışan silinecek.",
+                    text: "Bu departman silinecek.",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonText: "Evet, Sil",

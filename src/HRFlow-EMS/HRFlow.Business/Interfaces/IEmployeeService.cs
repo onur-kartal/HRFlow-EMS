@@ -22,6 +22,6 @@ namespace HRFlow.Business.Interfaces
 
         Task UpdateAsync(EmployeeUpdateDto dto);
 
-
+        Task<List<EmployeeLookupDto>> GetEmployeeLookupAsync();
     }
 }

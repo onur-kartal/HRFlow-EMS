@@ -40,6 +40,14 @@ namespace HRFlow.Web.Extensions
 
             services.AddScoped<IDashboardService, DashboardService>();
 
+            services.AddScoped<ILeaveTypeService, LeaveTypeService>();
+            services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
+            services.AddScoped<IGenericRepository<LeaveType>, LeaveTypeRepository>();
+
+            services.AddScoped<IGenericRepository<LeaveRequest>, LeaveRequestRepository>();
+            services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
+            services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+
             services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
             return services;
         }

@@ -21,6 +21,9 @@ namespace HRFlow.Data.Context
 
         public DbSet<Position> Positions => Set<Position>();
 
+        public DbSet<LeaveType> LeaveTypes => Set<LeaveType>();
+
+        public DbSet<LeaveRequest> LeaveRequests => Set<LeaveRequest>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

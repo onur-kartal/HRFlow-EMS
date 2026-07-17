@@ -1,68 +1,68 @@
 ﻿using HRFlow.Business.Interfaces;
 using HRFlow.Business.Services;
 using HRFlow.Web.Models.Department;
-using HRFlow.Web.Models.Position;
+using HRFlow.Web.Models.LeaveType;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRFlow.Web.Controllers
 {
-    public class PositionController : Controller
+    public class LeaveTypeController : Controller
     {
-        private readonly IPositionService _positionService;
+        private readonly ILeaveTypeService _leaveTypeService;
 
-        public PositionController(IPositionService positionService)
+        public LeaveTypeController(ILeaveTypeService leaveTypeService)
         {
-            _positionService = positionService;
+            _leaveTypeService = leaveTypeService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var model = await _positionService.GetPositionListAsync();
+            var model = await _leaveTypeService.GetleaveTypeListAsync();
             return View(model);
         }
         [HttpGet]
         public IActionResult Create()
         {
-            var model = new PositionCreateModel();
+            var model = new LeaveTypeCreateModel();
             return View(model);
         }
         [HttpPost]
-        public async Task<IActionResult> Create(PositionCreateModel model)
+        public async Task<IActionResult> Create(LeaveTypeCreateModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
-            await _positionService.CreateAsync(model.Position);
+            await _leaveTypeService.CreateAsync(model.LeaveType);
 
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var position = await _positionService.GetByIdForUpdateAsync(id);
+            var leaveType = await _leaveTypeService.GetByIdForUpdateAsync(id);
 
-            if (position == null)
+            if (leaveType == null)
                 return NotFound();
 
-            var model = new PositionEditViewModel
+            var model = new LeaveTypeEditViewModel
             {
-                Position = position
+                LeaveType = leaveType
             };
 
             return View(model);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(PositionEditViewModel model)
+        public async Task<IActionResult> Edit(LeaveTypeEditViewModel model)
         {
-            await _positionService.UpdateAsync(model.Position);
+            await _leaveTypeService.UpdateAsync(model.LeaveType);
 
             return RedirectToAction(nameof(Index));
         }
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _positionService.DeleteAsync(id);
+            await _leaveTypeService.DeleteAsync(id);
 
             return RedirectToAction(nameof(Index));
         }
