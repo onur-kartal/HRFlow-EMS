@@ -21,12 +21,14 @@ namespace HRFlow.Business.Services
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IPositionRepository _positionRepository;
+        private readonly IAccountService _accountService;
 
         public EmployeeService(
          IGenericRepository<Employee> repository,
          IEmployeeRepository employeeRepository,
          IDepartmentRepository departmentRepository,
          IPositionRepository positionRepository,
+         IAccountService accountService,
          IMapper mapper)
          : base(repository)
         {
@@ -34,6 +36,7 @@ namespace HRFlow.Business.Services
             _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
             _positionRepository = positionRepository;
+            _accountService = accountService;
         }
 
         public async Task CreateAsync(EmployeeCreateDto dto)
@@ -49,7 +52,17 @@ namespace HRFlow.Business.Services
         {
             var employees = await _employeeRepository.GetEmployeeListAsync();
 
-            return _mapper.Map<List<EmployeeListDto>>(employees);
+            var employeeList = _mapper.Map<List<EmployeeListDto>>(employees);
+
+            foreach (var employee in employeeList)
+            {
+                if (employee.HasUser)
+                {
+                    employee.UserRole = await _accountService.GetUserRoleAsync(employee.Id);
+                }
+            }
+
+            return employeeList;
         }
         public async Task<List<Department>> GetDepartmentsAsync()
         {

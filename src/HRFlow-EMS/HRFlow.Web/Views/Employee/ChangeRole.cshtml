@@ -1,0 +1,68 @@
+﻿@model HRFlow.Business.DTOs.Account.ChangeRoleDto
+
+@{
+    ViewData["Title"] = "Rol Değiştir";
+}
+
+<h3>Rol Değiştir</h3>
+
+<div class="card">
+    <div class="card-body">
+
+        <form asp-action="ChangeRole" method="post">
+
+            <input asp-for="EmployeeId" type="hidden" />
+
+            <div class="mb-3">
+                <label class="form-label">Personel</label>
+
+                <input class="form-control"
+                       value="@Model.EmployeeFullName"
+                       readonly />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SelectedRole" class="form-label"></label>
+
+                <select asp-for="SelectedRole" class="form-select">
+
+                    @foreach (var role in Model.Roles)
+                    {
+                        <option value="@role">@role</option>
+                    }
+
+                </select>
+
+                <span asp-validation-for="SelectedRole"
+                      class="text-danger"></span>
+
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+
+                <a asp-action="Index"
+                   class="btn btn-secondary">
+
+                    İptal
+
+                </a>
+
+                <button type="submit"
+                        class="btn btn-primary">
+
+                    <i class="bi bi-check-circle"></i>
+                    Kaydet
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

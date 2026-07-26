@@ -19,56 +19,95 @@ namespace HRFlow.Business.Services
     {
         private readonly ILeaveRequestRepository _leaveRequestRepository;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUser;
 
         public LeaveRequestService(
             IGenericRepository<LeaveRequest> repository,
             ILeaveRequestRepository leaveRequestRepository,
+            ICurrentUserService currentUser,
             IMapper mapper)
             : base(repository)
         {
             _leaveRequestRepository = leaveRequestRepository;
+            _currentUser = currentUser;
             _mapper = mapper;
         }
 
-        public async Task ApproveAsync(int id)
+        public async Task ApproveAsync(LeaveRequestApproveDto dto)
         {
-            var leaveRequest = await _leaveRequestRepository.GetByIdAsync(id);
+            var leaveRequest = await _leaveRequestRepository.GetByIdAsync(dto.Id);
 
             if (leaveRequest == null)
                 throw new Exception("İzin talebi bulunamadı.");
 
-            if (leaveRequest.Status == LeaveStatus.Approved)
-                throw new Exception("Bu izin talebi zaten onaylanmış.");
+            EnsureManagerHrOrAdmin();
 
-            var dto = _mapper.Map<LeaveRequestUpdateDto>(leaveRequest);
+            if (!IsAdmin() && leaveRequest.Status != LeaveStatus.Pending)
+                throw new Exception("Sadece bekleyen izin talepleri onaylanabilir.");
 
-            dto.Status = LeaveStatus.Approved;
+            leaveRequest.Status = LeaveStatus.Approved;
+            leaveRequest.ApprovedBy = _currentUser.UserId;
+            leaveRequest.ApprovedDate = DateTime.UtcNow;
 
-            await UpdateAsync(dto);
+            _repository.Update(leaveRequest);
+            await _repository.SaveChangesAsync();
         }
 
         public async Task CreateAsync(LeaveRequestCreateDto dto)
         {
-            // Tarih kontrolü
             if (dto.EndDate < dto.StartDate)
             {
                 throw new Exception("Bitiş tarihi, başlangıç tarihinden önce olamaz.");
             }
-            if (await _leaveRequestRepository.HasDateConflictAsync(dto.EmployeeId, dto.StartDate, dto.EndDate))
+            if (_currentUser.EmployeeId <= 0)
+                throw new Exception("Giriş yapan kullanıcının çalışan kaydı bulunamadı.");
+
+            if (await _leaveRequestRepository.HasDateConflictAsync(_currentUser.EmployeeId, dto.StartDate, dto.EndDate))
             {
                 throw new Exception("Seçilen tarih aralığında bu personele ait başka bir izin talebi bulunmaktadır.");
             }
             var leaveRequest = _mapper.Map<LeaveRequest>(dto);
+            leaveRequest.EmployeeId = _currentUser.EmployeeId;
+            leaveRequest.Status = LeaveStatus.Pending;
+            leaveRequest.TotalDays = (dto.EndDate.Date - dto.StartDate.Date).Days + 1;
+
             await _repository.AddAsync(leaveRequest);
+            await _repository.SaveChangesAsync();
+        }
+
+        public async Task CancelAsync(int id)
+        {
+            var leaveRequest = await _repository.GetByIdAsync(id);
+
+            if (leaveRequest == null)
+                throw new Exception("İzin talebi bulunamadı.");
+
+            if (!IsAdmin() && leaveRequest.Status != LeaveStatus.Pending)
+                throw new Exception("Sadece bekleyen izin talepleri iptal edilebilir.");
+
+            if (IsEmployee() && leaveRequest.EmployeeId != _currentUser.EmployeeId)
+                throw new UnauthorizedAccessException("Sadece kendi izin talebinizi iptal edebilirsiniz.");
+
+            if (!IsEmployee() && !IsManagerOrHr() && !IsAdmin())
+                throw new UnauthorizedAccessException("Bu işlem için yetkiniz bulunmuyor.");
+
+            leaveRequest.Status = LeaveStatus.Cancelled;
+
+            _repository.Update(leaveRequest);
+
             await _repository.SaveChangesAsync();
         }
 
         public async Task<LeaveRequestUpdateDto?> GetByIdForUpdateAsync(int id)
         {
             var leaveRequest = await GetByIdAsync(id);
+
             if (leaveRequest == null)
                 return null;
-            return _mapper.Map<LeaveRequestUpdateDto?>(leaveRequest);
+
+            EnsureAdmin();
+
+            return _mapper.Map<LeaveRequestUpdateDto>(leaveRequest);
         }
 
         public async Task<int> GetLeaveRequestCountAsync()
@@ -78,9 +117,34 @@ namespace HRFlow.Business.Services
 
         public async Task<List<LeaveRequestListDto>> GetLeaveRequestListAsync()
         {
-            var leaveRequest = await _leaveRequestRepository.GetLeaveRequestListAsync();
+            List<LeaveRequest> leaveRequest;
+
+            if (IsAdmin())
+            {
+                leaveRequest = await _leaveRequestRepository.GetLeaveRequestListAsync();
+            }
+            else if (IsManagerOrHr())
+            {
+                leaveRequest = await _leaveRequestRepository.GetPendingLeaveRequestListAsync();
+            }
+            else
+            {
+                leaveRequest = await _leaveRequestRepository.GetLeaveRequestsByEmployeeIdAsync(_currentUser.EmployeeId);
+            }
 
             return _mapper.Map<List<LeaveRequestListDto>>(leaveRequest);
+        }
+
+        public async Task<List<PendingLeaveDto>> GetPendingLeaveRequestsAsync(int count)
+        {
+            var leaveRequests = await _leaveRequestRepository.GetPendingLeaveRequestsAsync(count);
+
+            return _mapper.Map<List<PendingLeaveDto>>(leaveRequests);
+        }
+
+        public async Task<int> GetTodayOnLeaveCountAsync()
+        {
+            return await _leaveRequestRepository.GetTodayOnLeaveCountAsync();
         }
 
         public async Task RejectAsync(int id)
@@ -90,22 +154,25 @@ namespace HRFlow.Business.Services
             if (leaveRequest == null)
                 throw new Exception("İzin talebi bulunamadı.");
 
-            if (leaveRequest.Status == LeaveStatus.Rejected)
-                throw new Exception("Bu izin talebi zaten reddedilmiş.");
+            EnsureManagerHrOrAdmin();
 
-            var dto = _mapper.Map<LeaveRequestUpdateDto>(leaveRequest);
+            if (!IsAdmin() && leaveRequest.Status != LeaveStatus.Pending)
+                throw new Exception("Sadece bekleyen izin talepleri reddedilebilir.");
 
-            dto.Status = LeaveStatus.Rejected;
+            leaveRequest.Status = LeaveStatus.Rejected;
+            leaveRequest.ApprovedBy = null;
+            leaveRequest.ApprovedDate = null;
 
-            await UpdateAsync(dto);
+            _repository.Update(leaveRequest);
+            await _repository.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(LeaveRequestUpdateDto dto)
         {
-           
+            EnsureAdmin();
+
             if (dto.EndDate < dto.StartDate)
                 throw new Exception("Bitiş tarihi başlangıç tarihinden önce olamaz.");
-            // 2. Çakışan izin kontrolü
             if (await _leaveRequestRepository.HasDateConflictAsync(
                 dto.EmployeeId,
                 dto.StartDate,
@@ -119,19 +186,58 @@ namespace HRFlow.Business.Services
             if (leaveRequest == null)
                 return;
 
-            if(leaveRequest.IsDeleted)
-                throw new Exception("Sadece bekleyen izin talepleri güncellenebilir.");
-
-            if (leaveRequest.Status != LeaveStatus.Pending)
-            {
-                throw new Exception("Sadece bekleyen izin talepleri güncellenebilir.");
-            }
-
             _mapper.Map(dto, leaveRequest);
+            leaveRequest.TotalDays = (dto.EndDate.Date - dto.StartDate.Date).Days + 1;
+
+            if (dto.Status == LeaveStatus.Approved)
+            {
+                leaveRequest.ApprovedBy = _currentUser.UserId;
+                leaveRequest.ApprovedDate = DateTime.UtcNow;
+            }
+            else
+            {
+                leaveRequest.ApprovedBy = null;
+                leaveRequest.ApprovedDate = null;
+            }
 
             _repository.Update(leaveRequest);
 
             await _repository.SaveChangesAsync();
+        }
+        public async Task<List<UpcomingLeaveDto>> GetUpcomingLeaveRequestsAsync(int count)
+        {
+            var leaveRequests =
+                await _leaveRequestRepository.GetUpcomingLeaveRequestsAsync(count);
+
+            return _mapper.Map<List<UpcomingLeaveDto>>(leaveRequests);
+        }
+
+        private bool IsAdmin()
+        {
+            return _currentUser.IsInRole(HRFlow.Common.Constants.Roles.Admin);
+        }
+
+        private bool IsManagerOrHr()
+        {
+            return _currentUser.IsInRole(HRFlow.Common.Constants.Roles.Manager) ||
+                   _currentUser.IsInRole(HRFlow.Common.Constants.Roles.HR);
+        }
+
+        private bool IsEmployee()
+        {
+            return _currentUser.IsInRole(HRFlow.Common.Constants.Roles.Employee);
+        }
+
+        private void EnsureAdmin()
+        {
+            if (!IsAdmin())
+                throw new UnauthorizedAccessException("Bu işlem için yetkiniz bulunmuyor.");
+        }
+
+        private void EnsureManagerHrOrAdmin()
+        {
+            if (!IsAdmin() && !IsManagerOrHr())
+                throw new UnauthorizedAccessException("Bu işlem için yetkiniz bulunmuyor.");
         }
     }
 }

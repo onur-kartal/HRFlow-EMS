@@ -1,0 +1,88 @@
+﻿@model HRFlow.Business.DTOs.Account.ChangeRoleDto
+
+<div class="modal fade"
+     id="changeRoleModal"
+     tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Rol Değiştir
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <input asp-for="EmployeeId"
+                       type="hidden" />
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Personel
+
+                    </label>
+
+                    <input class="form-control"
+                           value="@Model.EmployeeFullName"
+                           readonly />
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Rol
+
+                    </label>
+
+                    <select asp-for="SelectedRole"
+                            class="form-select">
+
+                        @foreach (var role in Model.Roles)
+                        {
+                            <option value="@role">@role</option>
+                        }
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                    Vazgeç
+
+                </button>
+
+                <button class="btn btn-primary">
+
+                    Kaydet
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

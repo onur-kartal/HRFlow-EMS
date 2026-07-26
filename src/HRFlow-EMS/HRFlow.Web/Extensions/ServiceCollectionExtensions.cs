@@ -6,7 +6,9 @@ using HRFlow.Data.Context;
 using HRFlow.Data.Interfaces;
 using HRFlow.Data.Repositories;
 using HRFlow.Entities.HumanResources;
+using HRFlow.Entities.Identity;
 using HRFlow.Entities.Organization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRFlow.Web.Extensions
@@ -21,6 +23,32 @@ namespace HRFlow.Web.Extensions
             {
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection"));
+            });
+
+            services.AddIdentity<SystemUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 6;
+
+                options.User.RequireUniqueEmail = false;
+            }).AddEntityFrameworkStores<HRFlowDbContext>().AddDefaultTokenProviders();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+
+                options.AccessDeniedPath = "/Account/AccessDenied";
+
+                options.LogoutPath = "/Account/Logout";
+
+                options.Cookie.Name = "HRFlowAuth";
+
+                options.SlidingExpiration = true;
+
+                options.ExpireTimeSpan = TimeSpan.FromHours(8);
             });
 
             services.AddScoped<EmployeeRepository>();
@@ -47,6 +75,12 @@ namespace HRFlow.Web.Extensions
             services.AddScoped<IGenericRepository<LeaveRequest>, LeaveRequestRepository>();
             services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
             services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+
+            services.AddScoped<IAccountService, AccountService>();
+
+            services.AddHttpContextAccessor();
+
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
             return services;

@@ -11,6 +11,8 @@ namespace HRFlow.Business.DTOs.LeaveRequest
     {
         public int Id { get; set; }
 
+        public int EmployeeId { get; set; }
+
         public string FullName { get; set; } = string.Empty;
 
         public string LeaveTypeName { get; set; } = string.Empty;

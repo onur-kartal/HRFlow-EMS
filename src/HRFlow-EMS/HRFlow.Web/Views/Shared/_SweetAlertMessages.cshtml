@@ -1,0 +1,23 @@
+﻿@if (TempData["Success"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'İşlem Başarılı',
+            text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Success"])),
+            confirmButtonText: 'Tamam'
+        });
+    </script>
+}
+
+@if (TempData["Error"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'İşlem Başarısız.',
+            text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["Error"])),
+            confirmButtonText: 'Tamam'
+        });
+    </script>
+}

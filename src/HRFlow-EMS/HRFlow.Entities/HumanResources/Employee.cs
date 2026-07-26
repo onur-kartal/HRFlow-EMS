@@ -1,4 +1,5 @@
 ﻿using HRFlow.Entities.Base;
+using HRFlow.Entities.Identity;
 using HRFlow.Entities.Organization;
 using System;
 using System.Collections.Generic;
@@ -31,5 +32,7 @@ namespace HRFlow.Entities.HumanResources
         public int PositionId { get; set; }
 
         public Position Position { get; set; } = null!;
+
+        public SystemUser? SystemUser { get; set; }
     }
 }

@@ -18,9 +18,15 @@ namespace HRFlow.Entities.HumanResources
 
         public DateTime EndDate { get; set; }
 
+        public int TotalDays { get; set; }
+
         public string? Description { get; set; }
 
         public LeaveStatus Status { get; set; }
+
+        public string? ApprovedBy { get; set; }
+
+        public DateTime? ApprovedDate { get; set; }
 
         public Employee Employee { get; set; } = null!;
 

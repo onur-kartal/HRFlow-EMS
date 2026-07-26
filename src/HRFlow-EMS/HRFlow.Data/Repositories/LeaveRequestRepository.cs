@@ -38,10 +38,69 @@ namespace HRFlow.Data.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<LeaveRequest>> GetLeaveRequestsByEmployeeIdAsync(int employeeId)
+        {
+            return await LeaveRequestQuery()
+                .Where(x => x.EmployeeId == employeeId)
+                .ToListAsync();
+        }
+
+        public async Task<List<LeaveRequest>> GetPendingLeaveRequestListAsync()
+        {
+            return await LeaveRequestQuery()
+                .Where(x => x.Status == LeaveStatus.Pending)
+                .OrderBy(x => x.StartDate)
+                .ToListAsync();
+        }
+
+        public async Task<List<LeaveRequest>> GetPendingLeaveRequestsAsync(int count)
+        {
+            return await LeaveRequestQuery()
+            .Where(x =>
+                !x.IsDeleted &&
+                 x.Status == LeaveStatus.Pending)
+            .OrderBy(x => x.StartDate)
+            .Take(count)
+            .ToListAsync();
+        }
+
+        public async Task<int> GetTodayOnLeaveCountAsync()
+        {
+            var today = DateTime.Today;
+
+            return await _context.LeaveRequests
+                .Where(x =>
+                    !x.IsDeleted &&
+                    x.Status == LeaveStatus.Approved &&
+                    x.StartDate.Date <= today &&
+                    x.EndDate.Date >= today)
+                .Select(x => x.EmployeeId)
+                .Distinct()
+                .CountAsync();
+        }
+
+        public async Task<List<LeaveRequest>> GetUpcomingLeaveRequestsAsync(int count)
+        {
+            var today = DateTime.Today;
+            var nextWeek = today.AddDays(7);
+
+            return await LeaveRequestQuery()
+                .Where(x =>
+                    !x.IsDeleted &&
+                    x.Status == LeaveStatus.Approved &&
+                    x.StartDate.Date > today &&
+                    x.StartDate.Date <= nextWeek)
+                .OrderBy(x => x.StartDate)
+                .Take(count)
+                .ToListAsync();
+        }
+
         public async Task<bool> HasDateConflictAsync(int employeeId, DateTime startDate, DateTime endDate, int? excludeId = null)
         {
             return await _context.LeaveRequests
-                .Where(x => !x.IsDeleted && x.Status != LeaveStatus.Rejected)
+                .Where(x => !x.IsDeleted &&
+                            x.Status != LeaveStatus.Rejected &&
+                            x.Status != LeaveStatus.Cancelled)
                 .Where(x => !excludeId.HasValue || x.Id != excludeId.Value)
                 .AnyAsync(x =>
                 x.EmployeeId == employeeId &&

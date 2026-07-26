@@ -1,4 +1,5 @@
 ﻿using HRFlow.Entities.HumanResources;
+using HRFlow.Entities.Identity;
 using HRFlow.Entities.Organization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -40,6 +41,11 @@ namespace HRFlow.Data.Configurations
             builder.HasOne(x => x.Position)
                    .WithMany(x => x.Employees)
                    .HasForeignKey(x => x.PositionId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.SystemUser)
+                   .WithOne(x => x.Employee)
+                   .HasForeignKey<SystemUser>(x => x.EmployeeId)
                    .OnDelete(DeleteBehavior.Restrict);
         }
     }

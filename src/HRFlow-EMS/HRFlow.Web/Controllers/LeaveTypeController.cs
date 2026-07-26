@@ -1,11 +1,14 @@
 ﻿using HRFlow.Business.Interfaces;
 using HRFlow.Business.Services;
+using HRFlow.Common.Constants;
 using HRFlow.Web.Models.Department;
 using HRFlow.Web.Models.LeaveType;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRFlow.Web.Controllers
 {
+    [Authorize(Roles = Roles.Admin + "," + Roles.HR)]
     public class LeaveTypeController : Controller
     {
         private readonly ILeaveTypeService _leaveTypeService;
@@ -35,6 +38,8 @@ namespace HRFlow.Web.Controllers
             }
             await _leaveTypeService.CreateAsync(model.LeaveType);
 
+            TempData["Success"] = "İzin türü başarıyla oluşturuldu.";
+
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
@@ -57,12 +62,16 @@ namespace HRFlow.Web.Controllers
         {
             await _leaveTypeService.UpdateAsync(model.LeaveType);
 
+            TempData["Success"] = "İzin türü başarıyla güncellendi.";
+
             return RedirectToAction(nameof(Index));
         }
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             await _leaveTypeService.DeleteAsync(id);
+
+            TempData["Success"] = "İzin türü başarıyla silindi.";
 
             return RedirectToAction(nameof(Index));
         }

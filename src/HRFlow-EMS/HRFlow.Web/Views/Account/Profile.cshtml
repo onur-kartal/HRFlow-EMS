@@ -1,0 +1,105 @@
+@model HRFlow.Web.Models.Account.ProfileViewModel
+
+@{
+    ViewData["Title"] = "Profilim";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="mb-0 fs-3">Profilim</h1>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="card-title fw-semibold">Profil Bilgileri</h3>
+    </div>
+
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-12">
+                <h5 class="mb-0">Kimlik Bilgileri</h5>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Ad Soyad</label>
+                <input value="@Model.Profile.FullName" class="form-control" readonly />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Kullanıcı Adı</label>
+                <input value="@Model.Profile.UserName" class="form-control" readonly />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">E-posta</label>
+                <input value="@Model.Profile.Email" class="form-control" readonly />
+            </div>
+
+            <div class="col-12 pt-2">
+                <h5 class="mb-0">Çalışan Bilgileri</h5>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Departman</label>
+                <input value="@Model.Profile.DepartmentName" class="form-control" readonly />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Pozisyon</label>
+                <input value="@Model.Profile.PositionName" class="form-control" readonly />
+            </div>
+
+            <div class="col-12 pt-2">
+                <h5 class="mb-0">Diğer</h5>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Sistemdeki Rolü</label>
+                <input value="@Model.Profile.RoleName" class="form-control" readonly />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title fw-semibold">Şifre Değiştir</h3>
+    </div>
+
+    <form asp-action="ChangePassword" method="post">
+        <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label asp-for="ChangePassword.CurrentPassword" class="form-label"></label>
+                    <input asp-for="ChangePassword.CurrentPassword" class="form-control" />
+                    <span asp-validation-for="ChangePassword.CurrentPassword" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="ChangePassword.NewPassword" class="form-label"></label>
+                    <input asp-for="ChangePassword.NewPassword" class="form-control" />
+                    <span asp-validation-for="ChangePassword.NewPassword" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="ChangePassword.ConfirmNewPassword" class="form-label"></label>
+                    <input asp-for="ChangePassword.ConfirmNewPassword" class="form-control" />
+                    <span asp-validation-for="ChangePassword.ConfirmNewPassword" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer text-end">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle me-1"></i>
+                Kaydet
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

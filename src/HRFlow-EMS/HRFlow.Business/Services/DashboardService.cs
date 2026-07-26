@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HRFlow.Business.DTOs.Dashboard;
 using HRFlow.Business.DTOs.Employee;
+using HRFlow.Business.DTOs.LeaveRequest;
 using HRFlow.Business.Interfaces;
 using HRFlow.Data.Interfaces;
 using System;
@@ -16,17 +17,20 @@ namespace HRFlow.Business.Services
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IPositionRepository _positionRepository;
+        private readonly ILeaveRequestRepository _leaveRequestRepository;
         private readonly IMapper _mapper;
 
         public DashboardService(
             IDepartmentRepository departmentRepository,
             IPositionRepository positionRepository,
             IEmployeeRepository employeeRepository,
+            ILeaveRequestRepository leaveRequestRepository,
             IMapper mapper)
         {
             _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
             _positionRepository = positionRepository;
+            _leaveRequestRepository = leaveRequestRepository;
             _mapper = mapper;
         }
 
@@ -61,7 +65,11 @@ namespace HRFlow.Business.Services
                 LeaveCount = 0,
 
                 LastEmployees = _mapper.Map<List<EmployeeListDto>>(lastEmployees),
-                DepartmentChart = departmentChart
+                DepartmentChart = departmentChart,
+
+                TodayOnLeaveCount = await _leaveRequestRepository.GetTodayOnLeaveCountAsync(),
+                PendingLeaveRequests = _mapper.Map<List<PendingLeaveDto>>(await _leaveRequestRepository.GetPendingLeaveRequestsAsync(5)),
+                UpcomingLeaveRequests = _mapper.Map<List<UpcomingLeaveDto>>(await _leaveRequestRepository.GetUpcomingLeaveRequestsAsync(5))
             };
         }
     }

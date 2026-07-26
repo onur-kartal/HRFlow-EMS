@@ -30,6 +30,7 @@ namespace HRFlow.Data.Repositories
                 .Where(x => !x.IsDeleted)
                 .Include(x => x.Department)
                 .Include(x => x.Position)
+                .Include(x => x.SystemUser)
                 .ToListAsync();
         }
 

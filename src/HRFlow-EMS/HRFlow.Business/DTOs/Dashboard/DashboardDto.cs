@@ -1,4 +1,5 @@
 ﻿using HRFlow.Business.DTOs.Employee;
+using HRFlow.Business.DTOs.LeaveRequest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,9 @@ namespace HRFlow.Business.DTOs.Dashboard
         public int LeaveCount { get; set; }
         public List<EmployeeListDto> LastEmployees { get; set; } = [];
         public List<DepartmentChartDto> DepartmentChart { get; set; } = [];
+        public int TodayOnLeaveCount { get; set; }
+        public List<PendingLeaveDto> PendingLeaveRequests { get; set; } = new();
+        public List<UpcomingLeaveDto> UpcomingLeaveRequests { get; set; } = new();
     }
 }
 

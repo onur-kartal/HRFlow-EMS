@@ -1,11 +1,14 @@
 ﻿using HRFlow.Business.Interfaces;
 using HRFlow.Business.Services;
+using HRFlow.Common.Constants;
 using HRFlow.Web.Models.Department;
 using HRFlow.Web.Models.Position;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRFlow.Web.Controllers
 {
+    [Authorize(Roles = Roles.Admin + "," + Roles.HR)]
     public class PositionController : Controller
     {
         private readonly IPositionService _positionService;
@@ -35,6 +38,8 @@ namespace HRFlow.Web.Controllers
             }
             await _positionService.CreateAsync(model.Position);
 
+            TempData["Success"] = "Pozisyon başarıyla oluşturuldu.";
+
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
@@ -48,7 +53,7 @@ namespace HRFlow.Web.Controllers
             var model = new PositionEditViewModel
             {
                 Position = position
-            };
+            };            
 
             return View(model);
         }
@@ -57,12 +62,16 @@ namespace HRFlow.Web.Controllers
         {
             await _positionService.UpdateAsync(model.Position);
 
+            TempData["Success"] = "Pozisyon başarıyla güncellendi.";
+
             return RedirectToAction(nameof(Index));
         }
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             await _positionService.DeleteAsync(id);
+
+            TempData["Success"] = "Pozisyon başarıyla silindi.";
 
             return RedirectToAction(nameof(Index));
         }

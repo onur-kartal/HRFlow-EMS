@@ -14,8 +14,17 @@ namespace HRFlow.Data.Interfaces
 
         Task<List<LeaveRequest>> GetLeaveRequestListAsync();
 
+        Task<List<LeaveRequest>> GetLeaveRequestsByEmployeeIdAsync(int employeeId);
+
+        Task<List<LeaveRequest>> GetPendingLeaveRequestListAsync();
+
         Task<List<LeaveRequest>> GetLastLeaveRequestsAsync(int count);
 
         Task<bool> HasDateConflictAsync(int employeeId, DateTime startDate, DateTime endDate, int? excludeId = null);
+
+        Task<int> GetTodayOnLeaveCountAsync();
+
+        Task<List<LeaveRequest>> GetPendingLeaveRequestsAsync(int count);
+        Task<List<LeaveRequest>> GetUpcomingLeaveRequestsAsync(int count);
     }
 }

@@ -17,5 +17,9 @@ namespace HRFlow.Business.DTOs.Employee
         public string DepartmentName { get; set; } = string.Empty;
 
         public string PositionName { get; set; } = string.Empty;
+
+        public bool HasUser { get; set; }
+
+        public string? UserRole { get; set; }
     }
 }

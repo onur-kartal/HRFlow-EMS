@@ -11,30 +11,12 @@
 <form asp-action="Edit" method="post">
 
     <input asp-for="Id" type="hidden" />
+    <input asp-for="EmployeeId" type="hidden" />
 
     <div asp-validation-summary="ModelOnly"
          class="text-danger mb-3"></div>
 
     <div class="card-body">
-
-        <div class="mb-3">
-
-            <label asp-for="EmployeeId" class="form-label">
-                Personel
-            </label>
-
-            <select asp-for="EmployeeId"
-                    asp-items="ViewBag.Employees"
-                    class="form-select">
-
-                <option value="">Personel Seçiniz</option>
-
-            </select>
-
-            <span asp-validation-for="EmployeeId"
-                  class="text-danger"></span>
-
-        </div>
 
         <div class="mb-3">
 
@@ -121,6 +103,19 @@
 
             <span asp-validation-for="Description"
                   class="text-danger"></span>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label asp-for="Status" class="form-label">Durum</label>
+
+            <select asp-for="Status"
+                    asp-items="Html.GetEnumSelectList<HRFlow.Common.Enums.LeaveStatus>()"
+                    class="form-select">
+            </select>
+
+            <span asp-validation-for="Status" class="text-danger"></span>
 
         </div>
 

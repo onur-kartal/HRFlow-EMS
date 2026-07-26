@@ -21,8 +21,15 @@ namespace HRFlow.Business.Interfaces
 
         Task UpdateAsync(LeaveRequestUpdateDto dto);
 
-        Task ApproveAsync(int id);
+        Task ApproveAsync(LeaveRequestApproveDto dto);
 
         Task RejectAsync(int id);
+
+        Task CancelAsync(int id);
+
+        Task<int> GetTodayOnLeaveCountAsync();
+
+        Task<List<PendingLeaveDto>> GetPendingLeaveRequestsAsync(int count);
+        Task<List<UpcomingLeaveDto>> GetUpcomingLeaveRequestsAsync(int count);
     }
 }

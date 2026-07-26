@@ -1,14 +1,17 @@
 ﻿using HRFlow.Business.DTOs.Department;
 using HRFlow.Business.Interfaces;
 using HRFlow.Business.Services;
+using HRFlow.Common.Constants;
 using HRFlow.Web.Models.Department;
 using HRFlow.Web.Models.Employee;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
 
 namespace HRFlow.Web.Controllers
 {
+    [Authorize(Roles = Roles.Admin + "," + Roles.HR)]
     public class DepartmentController : Controller
     {
         private readonly IDepartmentService _departmentService;
@@ -38,6 +41,8 @@ namespace HRFlow.Web.Controllers
             }
             await _departmentService.CreateAsync(model.Department);
 
+            TempData["Success"] = "Departman başarıyla oluşturuldu.";
+
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
@@ -60,12 +65,16 @@ namespace HRFlow.Web.Controllers
         {
             await _departmentService.UpdateAsync(model.Department);
 
+            TempData["Success"] = "Departman başarıyla güncellendi.";
+
             return RedirectToAction(nameof(Index));
         }
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             await _departmentService.DeleteAsync(id);
+
+            TempData["Success"] = "Departman başarıyla silindi.";
 
             return RedirectToAction(nameof(Index));
         }

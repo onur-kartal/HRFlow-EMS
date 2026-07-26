@@ -1,23 +1,23 @@
 ﻿using HRFlow.Business.DTOs.LeaveRequest;
 using HRFlow.Business.Interfaces;
 using HRFlow.Business.Services;
+using HRFlow.Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HRFlow.Web.Controllers
 {
+    [Authorize]
     public class LeaveRequestController : Controller
     {
         private readonly ILeaveRequestService _leaveRequestService;
-        private readonly IEmployeeService _employeeService;
         private readonly ILeaveTypeService _leaveTypeService;
         public LeaveRequestController(
                 ILeaveRequestService leaveRequestService,
-                IEmployeeService employeeService,
                 ILeaveTypeService leaveTypeService)
         {
             _leaveRequestService = leaveRequestService;
-            _employeeService = employeeService;
             _leaveTypeService = leaveTypeService;
         }
         public async Task<IActionResult> Index()
@@ -27,18 +27,21 @@ namespace HRFlow.Web.Controllers
             return View(leaveRequests);
         }
         [HttpGet]
+        [Authorize(Roles = Roles.Employee)]
         public async Task<IActionResult> Create()
         {
-            await LoadLookupsAsync();
+            await LoadLeaveTypesAsync();
 
             return View(new LeaveRequestCreateDto());
         }
         [HttpPost]
+        [Authorize(Roles = Roles.Employee)]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(LeaveRequestCreateDto dto)
         {
             if (!ModelState.IsValid)
             {
-                await LoadLookupsAsync();
+                await LoadLeaveTypesAsync();
                 return View(dto);
             }
 
@@ -46,42 +49,68 @@ namespace HRFlow.Web.Controllers
             {
                 await _leaveRequestService.CreateAsync(dto);
 
+                TempData["Success"] = "İzin talebi başarıyla oluşturuldu.";
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
 
-                await LoadLookupsAsync();
+                await LoadLeaveTypesAsync();
 
                 return View(dto);
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        [Authorize(Roles = Roles.Employee + "," + Roles.Manager + "," + Roles.HR + "," + Roles.Admin)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(int id)
         {
-            await _leaveRequestService.DeleteAsync(id);
+            try
+            {
+                await _leaveRequestService.CancelAsync(id);
+
+                TempData["Success"] = "İzin talebi başarıyla iptal edildi.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(Index));
+
         }
         [HttpGet]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Edit(int id)
         {
-            var model = await _leaveRequestService.GetByIdForUpdateAsync(id);
+            try
+            {
+                var model = await _leaveRequestService.GetByIdForUpdateAsync(id);
 
-            if (model == null)
-                return NotFound();
+                if (model == null)
+                    return NotFound();
 
-            await LoadLookupsAsync();
+                await LoadLeaveTypesAsync();
 
-            return View(model);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
+
         }
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(LeaveRequestUpdateDto dto)
         {
             if (!ModelState.IsValid)
             {
-                await LoadLookupsAsync();
+                await LoadLeaveTypesAsync();
                 return View(dto);
             }
 
@@ -89,23 +118,29 @@ namespace HRFlow.Web.Controllers
             {
                 await _leaveRequestService.UpdateAsync(dto);
 
+                TempData["Success"] = "İzin talebi başarıyla güncellendi.";
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
 
-                await LoadLookupsAsync();
+                await LoadLeaveTypesAsync();
 
                 return View(dto);
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Approve(int id)
+        [Authorize(Roles = Roles.Manager + "," + Roles.HR + "," + Roles.Admin)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Approve(LeaveRequestApproveDto dto)
         {
             try
             {
-                await _leaveRequestService.ApproveAsync(id);
+                await _leaveRequestService.ApproveAsync(dto);
+
+                TempData["Success"] = "İzin talebi onaylandı.";
             }
             catch (Exception ex)
             {
@@ -115,11 +150,15 @@ namespace HRFlow.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
         [HttpPost]
+        [Authorize(Roles = Roles.Manager + "," + Roles.HR + "," + Roles.Admin)]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reject(int id)
         {
             try
             {
                 await _leaveRequestService.RejectAsync(id);
+
+                TempData["Success"] = "İzin talebi reddedildi.";
             }
             catch (Exception ex)
             {
@@ -128,18 +167,8 @@ namespace HRFlow.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-        private async Task LoadLookupsAsync()
+        private async Task LoadLeaveTypesAsync()
         {
-            var employees = await _employeeService.GetEmployeeLookupAsync();
-
-            ViewBag.Employees = employees
-                .OrderBy(x => x.FullName)
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.FullName
-                });
-
             var leaveTypes = await _leaveTypeService.GetLeaveTypeLookupAsync();
 
             ViewBag.LeaveTypes = leaveTypes

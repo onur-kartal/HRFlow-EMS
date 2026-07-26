@@ -16,6 +16,9 @@ namespace HRFlow.Data.Configurations
             builder.Property(x => x.Description)
                    .HasMaxLength(500);
 
+            builder.Property(x => x.ApprovedBy)
+                   .HasMaxLength(450);
+
             builder.HasOne(x => x.Employee)
                    .WithMany()
                    .HasForeignKey(x => x.EmployeeId)

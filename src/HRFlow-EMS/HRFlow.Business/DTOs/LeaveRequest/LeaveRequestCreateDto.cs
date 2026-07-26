@@ -9,10 +9,7 @@ namespace HRFlow.Business.DTOs.LeaveRequest
 {
     public class LeaveRequestCreateDto
     {
-        [Required(ErrorMessage = "Personel seçiniz.")]
-        public int EmployeeId { get; set; }
-
-        [Required(ErrorMessage = "İzin türü seçiniz.")]
+        [Range(1, int.MaxValue, ErrorMessage = "İzin türü seçiniz.")]
         public int LeaveTypeId { get; set; }
 
         [Required(ErrorMessage = "Başlangıç tarihi zorunludur.")]

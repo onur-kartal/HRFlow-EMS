@@ -1,4 +1,5 @@
 ﻿@model List<HRFlow.Business.DTOs.Employee.EmployeeListDto>
+@using HRFlow.Common.Helpers
 
 <div class="card-header">
     <div class="row align-items-center">
@@ -8,10 +9,17 @@
         </div>
 
         <div class="col-auto">
-            <a asp-action="Create" class="btn btn-primary btn-sm">
-                <i class="bi bi-plus-circle"></i>
-                Yeni Personel
-            </a>
+            @if (PermissionHelper.CanManageEmployees(User))
+            {
+                <a asp-action="Create"
+                   class="btn btn-primary btn-sm">
+
+                    <i class="bi bi-plus-circle"></i>
+
+                    Yeni Personel
+
+                </a>
+            }
         </div>
 
     </div>
@@ -26,6 +34,7 @@
                 <th>Ad Soyad</th>
                 <th>Departman</th>
                 <th>Pozisyon</th>
+                <th>Kullanıcı</th>
                 <th class="text-center" style="width:180px;">İşlemler</th>
             </tr>
         </thead>
@@ -42,33 +51,86 @@
 
                     <td>@item.PositionName</td>
 
+                    <td>
+                        @if (!item.HasUser)
+                        {
+                            <span class="badge bg-danger">
+                                Yok
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">
+                                @item.UserRole
+                            </span>
+
+                        }
+                    </td>
+
                     <td class="text-center">
 
-                        <a asp-action="Edit"
-                           asp-route-id="@item.Id"
-                           class="btn btn-warning btn-sm me-1">
+                        @if (PermissionHelper.CanManageEmployees(User))
+                        {
+                            <a asp-action="Edit"
+                               asp-route-id="@item.Id"
+                               class="btn btn-warning btn-sm me-1">
 
-                            <i class="bi bi-pencil-square"></i>
-                            Düzenle
+                                <i class="bi bi-pencil-square"></i>
 
-                        </a>
+                                Düzenle
+
+                            </a>
+                        }
 
                         <form asp-action="Delete"
                               asp-route-id="@item.Id"
                               method="post"
                               class="d-inline delete-form">
 
-                            <button type="submit"
-                                    class="btn btn-danger btn-sm">
+                            @if (PermissionHelper.CanDeleteEmployee(User))
+                            {
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm">
 
-                                <i class="bi bi-trash"></i>
-                                Sil
+                                    <i class="bi bi-trash"></i>
+                                    Sil
 
-                            </button>
-
+                                </button>
+                            }
                         </form>
 
+                        @if (!item.HasUser)
+                        {
+                            @if (PermissionHelper.CanCreateUser(User))
+                            {
+                                <a asp-action="CreateUser"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-success mt-1">
+
+                                    <i class="bi bi-person-plus-fill"></i>
+                                    Kullanıcı Oluştur
+
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            @if (PermissionHelper.CanChangeRole(User))
+                            {
+                                <a asp-action="ChangeRole"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-warning mt-1">
+
+                                    <i class="bi bi-person-gear"></i>
+                                    Rol Değiştir
+
+                                </a>
+                            }
+                        }
+
                     </td>
+
+
 
                 </tr>
             }
@@ -78,6 +140,7 @@
 
     </table>
 
+    <div id="modalContainer"></div>
 </div>
 
 

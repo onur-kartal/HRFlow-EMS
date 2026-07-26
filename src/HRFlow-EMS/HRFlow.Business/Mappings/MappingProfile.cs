@@ -18,6 +18,20 @@ namespace HRFlow.Business.Mappings
     {
         public MappingProfile()
         {
+            CreateMap<HRFlow.Entities.Identity.SystemUser, HRFlow.Business.DTOs.Account.ProfileDto>()
+                .ForMember(dest => dest.FullName,
+                    opt => opt.MapFrom(src => src.Employee.FirstName + " " + src.Employee.LastName))
+                .ForMember(dest => dest.UserName,
+                    opt => opt.MapFrom(src => src.UserName ?? string.Empty))
+                .ForMember(dest => dest.Email,
+                    opt => opt.MapFrom(src => src.Email ?? string.Empty))
+                .ForMember(dest => dest.DepartmentName,
+                    opt => opt.MapFrom(src => src.Employee.Department.Name))
+                .ForMember(dest => dest.PositionName,
+                    opt => opt.MapFrom(src => src.Employee.Position.Name))
+                .ForMember(dest => dest.RoleName,
+                    opt => opt.Ignore());
+
             //employee
             CreateMap<Entities.HumanResources.Employee, DTOs.Employee.EmployeeListDto>()
                     .ForMember(dest => dest.DepartmentName,
@@ -30,7 +44,9 @@ namespace HRFlow.Business.Mappings
                         opt => opt.MapFrom(src => src.FirstName + " " + src.LastName))
 
                     .ForMember(dest => dest.Id,
-                        opt => opt.MapFrom(src => src.Id));
+                        opt => opt.MapFrom(src => src.Id))
+                    .ForMember(dest => dest.HasUser,
+                        opt => opt.MapFrom(src => src.SystemUser != null)); 
 
             CreateMap<EmployeeCreateDto, Employee>();
 
@@ -41,6 +57,8 @@ namespace HRFlow.Business.Mappings
             CreateMap<Employee, EmployeeLookupDto>()
                     .ForMember(dest => dest.FullName,
                         opt => opt.MapFrom(src => src.FirstName + " " + src.LastName));
+
+
 
             //department
             CreateMap<Entities.Organization.Department, DTOs.Department.DepartmentListDto>()
@@ -77,13 +95,31 @@ namespace HRFlow.Business.Mappings
 
             //leaverequest
             CreateMap<LeaveRequest, LeaveRequestListDto>()
+                .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.EmployeeId))
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Employee.FirstName + " " + src.Employee.LastName))
                 .ForMember(dest => dest.LeaveTypeName,opt => opt.MapFrom(src => src.LeaveType.Name))
-                .ForMember(dest => dest.TotalDays,opt => opt.MapFrom(src => (src.EndDate - src.StartDate).Days + 1));
+                .ForMember(dest => dest.TotalDays,opt => opt.MapFrom(src => src.TotalDays));
 
             CreateMap<LeaveRequestCreateDto, LeaveRequest>();
 
-            CreateMap<LeaveRequest, LeaveRequestUpdateDto>().ReverseMap();
+            CreateMap<LeaveRequest, LeaveRequestUpdateDto>().ReverseMap()
+                .ForMember(dest => dest.TotalDays, opt => opt.Ignore())
+                .ForMember(dest => dest.ApprovedBy, opt => opt.Ignore())
+                .ForMember(dest => dest.ApprovedDate, opt => opt.Ignore());
+
+            CreateMap<LeaveRequest, PendingLeaveDto>()
+                .ForMember(dest => dest.EmployeeFullName,
+                    opt => opt.MapFrom(src => src.Employee.FirstName + " " + src.Employee.LastName))
+                .ForMember(dest => dest.LeaveTypeName,
+                    opt => opt.MapFrom(src => src.LeaveType.Name));
+
+            CreateMap<LeaveRequest, UpcomingLeaveDto>()
+                .ForMember(dest => dest.EmployeeFullName,
+                    opt => opt.MapFrom(src => src.Employee.FirstName + " " + src.Employee.LastName))
+                .ForMember(dest => dest.LeaveTypeName,
+                    opt => opt.MapFrom(src => src.LeaveType.Name))
+                .ForMember(dest => dest.TotalDays,
+                    opt => opt.MapFrom(src => (src.EndDate - src.StartDate).Days));
         }
     }
 }
