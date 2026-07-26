@@ -76,6 +76,14 @@ namespace HRFlow.Web.Extensions
             services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
             services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 
+            services.AddScoped<IGenericRepository<OvertimeRequest>, OvertimeRequestRepository>();
+            services.AddScoped<IOvertimeRequestRepository, OvertimeRequestRepository>();
+            services.AddScoped<IOvertimeRequestService, OvertimeRequestService>();
+
+            services.AddScoped<IGenericRepository<Announcement>, AnnouncementRepository>();
+            services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+            services.AddScoped<IAnnouncementService, AnnouncementService>();
+
             services.AddScoped<IAccountService, AccountService>();
 
             services.AddHttpContextAccessor();

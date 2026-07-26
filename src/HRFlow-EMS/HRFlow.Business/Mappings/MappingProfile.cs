@@ -4,6 +4,8 @@ using HRFlow.Business.DTOs.Employee;
 using HRFlow.Business.DTOs.LeaveRequest;
 using HRFlow.Business.DTOs.LeaveType;
 using HRFlow.Business.DTOs.Position;
+using HRFlow.Business.DTOs.OvertimeRequest;
+using HRFlow.Business.DTOs.Announcement;
 using HRFlow.Entities.HumanResources;
 using HRFlow.Entities.Organization;
 using System;
@@ -120,6 +122,31 @@ namespace HRFlow.Business.Mappings
                     opt => opt.MapFrom(src => src.LeaveType.Name))
                 .ForMember(dest => dest.TotalDays,
                     opt => opt.MapFrom(src => (src.EndDate - src.StartDate).Days));
+
+            //overtimerequest
+            CreateMap<OvertimeRequestCreateDto, OvertimeRequest>()
+                .ForMember(dest => dest.StartTime, opt => opt.Ignore())
+                .ForMember(dest => dest.EndTime, opt => opt.Ignore())
+                .ForMember(dest => dest.TotalHours, opt => opt.Ignore())
+                .ForMember(dest => dest.EmployeeId, opt => opt.Ignore())
+                .ForMember(dest => dest.Status, opt => opt.Ignore())
+                .ForMember(dest => dest.ApprovedBy, opt => opt.Ignore())
+                .ForMember(dest => dest.ApprovedDate, opt => opt.Ignore());
+
+            CreateMap<OvertimeRequest, OvertimeRequestListDto>()
+                .ForMember(dest => dest.FullName,
+                    opt => opt.MapFrom(src => src.Employee.FirstName + " " + src.Employee.LastName));
+
+            //announcement
+            CreateMap<AnnouncementCreateDto, Announcement>();
+
+            CreateMap<Announcement, AnnouncementUpdateDto>().ReverseMap()
+                .ForMember(dest => dest.IsActive, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
+
+            CreateMap<Announcement, AnnouncementListDto>();
+
+            CreateMap<Announcement, AnnouncementDashboardDto>();
         }
     }
 }

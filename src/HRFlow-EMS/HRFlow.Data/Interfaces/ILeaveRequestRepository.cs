@@ -16,6 +16,8 @@ namespace HRFlow.Data.Interfaces
 
         Task<List<LeaveRequest>> GetLeaveRequestsByEmployeeIdAsync(int employeeId);
 
+        Task<int> GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus status, int? employeeId = null);
+
         Task<List<LeaveRequest>> GetPendingLeaveRequestListAsync();
 
         Task<List<LeaveRequest>> GetLastLeaveRequestsAsync(int count);

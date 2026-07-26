@@ -28,6 +28,10 @@ namespace HRFlow.Data.Context
 
         public DbSet<LeaveRequest> LeaveRequests => Set<LeaveRequest>();
 
+        public DbSet<OvertimeRequest> OvertimeRequests => Set<OvertimeRequest>();
+
+        public DbSet<Announcement> Announcements => Set<Announcement>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

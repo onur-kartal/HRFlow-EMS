@@ -1,0 +1,14 @@
+@model HRFlow.Business.DTOs.Dashboard.ManagerDashboardDto
+
+<div class="row g-3">
+    <div class="col-lg-3 col-md-6"><div class="info-box"><span class="info-box-icon text-bg-warning shadow-sm"><i class="bi bi-hourglass-split"></i></span><div class="info-box-content"><span class="info-box-text">Bekleyen İzin Talepleri</span><span class="info-box-number">@Model.PendingLeaveCount</span></div></div></div>
+    <div class="col-lg-3 col-md-6"><div class="info-box"><span class="info-box-icon text-bg-success shadow-sm"><i class="bi bi-check-circle"></i></span><div class="info-box-content"><span class="info-box-text">Onaylanan İzinler</span><span class="info-box-number">@Model.ApprovedLeaveCount</span></div></div></div>
+    <div class="col-lg-3 col-md-6"><div class="info-box"><span class="info-box-icon text-bg-danger shadow-sm"><i class="bi bi-x-circle"></i></span><div class="info-box-content"><span class="info-box-text">Reddedilen İzinler</span><span class="info-box-number">@Model.RejectedLeaveCount</span></div></div></div>
+    <div class="col-lg-3 col-md-6"><div class="info-box"><span class="info-box-icon text-bg-secondary shadow-sm"><i class="bi bi-slash-circle"></i></span><div class="info-box-content"><span class="info-box-text">İptal Edilen İzinler</span><span class="info-box-number">@Model.CancelledLeaveCount</span></div></div></div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <partial name="~/Views/Dashboard/Partials/_AnnouncementPanel.cshtml" model="Model.Announcements" />
+    </div>
+</div>

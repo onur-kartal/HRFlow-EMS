@@ -1,0 +1,67 @@
+@using HRFlow.Common.Enums
+@model List<HRFlow.Business.DTOs.OvertimeRequest.OvertimeRequestListDto>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="card-title mb-0">Fazla Mesailerim</h3>
+            </div>
+            <div class="col-auto">
+                <a asp-action="Create" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-circle"></i> Yeni Fazla Mesai Talebi
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <table id="myOvertimeRequestTable" class="table table-bordered table-striped table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Başlangıç</th>
+                    <th>Bitiş</th>
+                    <th>Toplam Saat</th>
+                    <th>Açıklama</th>
+                    <th>Durum</th>
+                    <th class="text-center" style="width: 120px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.WorkDate.ToString("dd.MM.yyyy")</td>
+                        <td>@item.StartTime.ToString("hh\\:mm")</td>
+                        <td>@item.EndTime.ToString("hh\\:mm")</td>
+                        <td>@item.TotalHours.ToString("0.##")</td>
+                        <td>@item.Description</td>
+                        <td>@item.Status</td>
+                        <td class="text-center">
+                            @if (item.Status == OvertimeStatus.Pending)
+                            {
+                                <form asp-action="Cancel" asp-route-id="@item.Id" method="post" class="d-inline cancel-form">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">İptal</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        initializeDataTable('#myOvertimeRequestTable', { columnDefs: [{ targets: 6, orderable: false }] });
+
+        document.querySelectorAll('.cancel-form').forEach(form => {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                Swal.fire({ title: 'İptal ediyor musunuz?', text: 'Fazla mesai talebi iptal edilecektir.', icon: 'warning', showCancelButton: true, confirmButtonText: 'Evet, İptal Et', cancelButtonText: 'Vazgeç', reverseButtons: true })
+                    .then(result => { if (result.isConfirmed) form.submit(); });
+            });
+        });
+    </script>
+}

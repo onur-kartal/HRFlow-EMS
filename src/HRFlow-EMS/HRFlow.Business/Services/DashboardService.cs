@@ -18,19 +18,25 @@ namespace HRFlow.Business.Services
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IPositionRepository _positionRepository;
         private readonly ILeaveRequestRepository _leaveRequestRepository;
+        private readonly IAnnouncementService _announcementService;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUser;
 
         public DashboardService(
             IDepartmentRepository departmentRepository,
             IPositionRepository positionRepository,
             IEmployeeRepository employeeRepository,
             ILeaveRequestRepository leaveRequestRepository,
+            IAnnouncementService announcementService,
+            ICurrentUserService currentUser,
             IMapper mapper)
         {
             _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
             _positionRepository = positionRepository;
             _leaveRequestRepository = leaveRequestRepository;
+            _announcementService = announcementService;
+            _currentUser = currentUser;
             _mapper = mapper;
         }
 
@@ -69,7 +75,34 @@ namespace HRFlow.Business.Services
 
                 TodayOnLeaveCount = await _leaveRequestRepository.GetTodayOnLeaveCountAsync(),
                 PendingLeaveRequests = _mapper.Map<List<PendingLeaveDto>>(await _leaveRequestRepository.GetPendingLeaveRequestsAsync(5)),
-                UpcomingLeaveRequests = _mapper.Map<List<UpcomingLeaveDto>>(await _leaveRequestRepository.GetUpcomingLeaveRequestsAsync(5))
+                UpcomingLeaveRequests = _mapper.Map<List<UpcomingLeaveDto>>(await _leaveRequestRepository.GetUpcomingLeaveRequestsAsync(5)),
+                Announcements = await _announcementService.GetActiveDashboardAnnouncementsAsync(5)
+            };
+        }
+
+        public async Task<ManagerDashboardDto> GetManagerDashboardAsync()
+        {
+            return new ManagerDashboardDto
+            {
+                PendingLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Pending),
+                ApprovedLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Approved),
+                RejectedLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Rejected),
+                CancelledLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Cancelled),
+                Announcements = await _announcementService.GetActiveDashboardAnnouncementsAsync(5)
+            };
+        }
+
+        public async Task<EmployeeDashboardDto> GetEmployeeDashboardAsync()
+        {
+            var employeeId = _currentUser.EmployeeId;
+
+            return new EmployeeDashboardDto
+            {
+                PendingLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Pending, employeeId),
+                ApprovedLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Approved, employeeId),
+                RejectedLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Rejected, employeeId),
+                CancelledLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Cancelled, employeeId),
+                Announcements = await _announcementService.GetActiveDashboardAnnouncementsAsync(5)
             };
         }
     }

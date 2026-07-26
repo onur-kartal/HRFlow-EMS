@@ -18,12 +18,21 @@ namespace HRFlow.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var model = await _dashboardService.GetDashboardAsync();
-            Console.WriteLine(_currentUser.EmployeeId);
+            var model = new HRFlow.Web.Models.Dashboard.DashboardViewModel();
 
-            Console.WriteLine(_currentUser.Email);
+            if (User.IsInRole(HRFlow.Common.Constants.Roles.Employee))
+            {
+                model.EmployeeDashboard = await _dashboardService.GetEmployeeDashboardAsync();
+            }
+            else if (User.IsInRole(HRFlow.Common.Constants.Roles.Manager))
+            {
+                model.ManagerDashboard = await _dashboardService.GetManagerDashboardAsync();
+            }
+            else
+            {
+                model.AdminHrDashboard = await _dashboardService.GetDashboardAsync();
+            }
 
-            Console.WriteLine(_currentUser.UserName);
             return View(model);
         }
     }

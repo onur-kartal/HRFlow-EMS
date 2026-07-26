@@ -1,0 +1,79 @@
+@model List<HRFlow.Business.DTOs.Announcement.AnnouncementListDto>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="card-title mb-0">Duyuru Yönetimi</h3>
+            </div>
+            <div class="col-auto">
+                <a asp-action="Create" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-circle"></i> Yeni Duyuru
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <table id="announcementTable" class="table table-bordered table-striped table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Başlık</th>
+                    <th>Başlangıç Tarihi</th>
+                    <th>Bitiş Tarihi</th>
+                    <th>Durum</th>
+                    <th>Oluşturan</th>
+                    <th class="text-center" style="width: 260px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.StartDate.ToString("dd.MM.yyyy")</td>
+                        <td>@item.EndDate.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="badge text-bg-success">Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="badge text-bg-secondary">Pasif</span>
+                            }
+                        </td>
+                        <td>@item.CreatedBy</td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Düzenle</a>
+                            <form asp-action="ChangeStatus" asp-route-id="@item.Id" method="post" class="d-inline status-form">
+                                <button type="submit" class="btn btn-outline-primary btn-sm">@(item.IsActive ? "Pasif Yap" : "Aktif Yap")</button>
+                            </form>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline delete-form">
+                                <button type="submit" class="btn btn-danger btn-sm">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        initializeDataTable('#announcementTable', { columnDefs: [{ targets: 5, orderable: false }] });
+
+        function confirmAnnouncementAction(selector, title, text, icon, confirmButtonText) {
+            document.querySelectorAll(selector).forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    Swal.fire({ title: title, text: text, icon: icon, showCancelButton: true, confirmButtonText: confirmButtonText, cancelButtonText: 'Vazgeç', reverseButtons: true })
+                        .then(result => { if (result.isConfirmed) form.submit(); });
+                });
+            });
+        }
+
+        confirmAnnouncementAction('.status-form', 'Duyuru durumunu değiştirmek istiyor musunuz?', '', 'question', 'Evet, Değiştir');
+        confirmAnnouncementAction('.delete-form', 'Duyuruyu silmek istiyor musunuz?', 'Bu işlem geri alınamaz.', 'warning', 'Evet, Sil');
+    </script>
+}

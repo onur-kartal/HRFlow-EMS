@@ -10,5 +10,9 @@ namespace HRFlow.Business.Interfaces
     public interface IDashboardService
     {
         Task<DashboardDto> GetDashboardAsync();
+
+        Task<ManagerDashboardDto> GetManagerDashboardAsync();
+
+        Task<EmployeeDashboardDto> GetEmployeeDashboardAsync();
     }
 }

@@ -78,8 +78,48 @@
                                 <p>İzin Talepleri</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a asp-controller="Announcement"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-megaphone-fill"></i>
+                                <p>Duyuru Yönetimi</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
+                }
+
+                @if (User.IsInRole(HRFlow.Common.Constants.Roles.Admin) || User.IsInRole(HRFlow.Common.Constants.Roles.HR))
+                {
+                    <li class="nav-item">
+                        <a asp-controller="OvertimeRequest"
+                           asp-action="MyRequests"
+                           class="nav-link">
+                            <i class="nav-icon bi bi-clock-history"></i>
+                            <p>Fazla Mesailerim</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="OvertimeRequest"
+                           asp-action="ApprovalList"
+                           class="nav-link">
+                            <i class="nav-icon bi bi-clock"></i>
+                            <p>Fazla Mesai Onayları</p>
+                        </a>
+                    </li>
+                }
+
+                @if (User.IsInRole(HRFlow.Common.Constants.Roles.Admin))
+                {
+                    <li class="nav-item">
+                        <a asp-controller="OvertimeRequest"
+                           asp-action="Management"
+                           class="nav-link">
+                            <i class="nav-icon bi bi-clock-fill"></i>
+                            <p>Fazla Mesai Yönetimi</p>
+                        </a>
+                    </li>
                 }
 
                 @if (User.IsInRole(HRFlow.Common.Constants.Roles.Manager))
@@ -92,6 +132,22 @@
                             <p>İzin Talepleri</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a asp-controller="OvertimeRequest"
+                           asp-action="MyRequests"
+                           class="nav-link">
+                            <i class="nav-icon bi bi-clock-history"></i>
+                            <p>Fazla Mesailerim</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="OvertimeRequest"
+                           asp-action="ApprovalList"
+                           class="nav-link">
+                            <i class="nav-icon bi bi-clock"></i>
+                            <p>Fazla Mesai Onayları</p>
+                        </a>
+                    </li>
                 }
 
                 @if (User.IsInRole(HRFlow.Common.Constants.Roles.Employee))
@@ -102,6 +158,14 @@
                            class="nav-link">
                             <i class="nav-icon bi bi-calendar-check-fill"></i>
                             <p>İzin Taleplerim</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="OvertimeRequest"
+                           asp-action="MyRequests"
+                           class="nav-link">
+                            <i class="nav-icon bi bi-clock-history"></i>
+                            <p>Fazla Mesailerim</p>
                         </a>
                     </li>
                 }

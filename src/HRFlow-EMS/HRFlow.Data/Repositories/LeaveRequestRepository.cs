@@ -45,6 +45,19 @@ namespace HRFlow.Data.Repositories
                 .ToListAsync();
         }
 
+        public async Task<int> GetLeaveRequestCountByStatusAsync(LeaveStatus status, int? employeeId = null)
+        {
+            var query = _context.LeaveRequests
+                .Where(x => !x.IsDeleted && x.Status == status);
+
+            if (employeeId.HasValue)
+            {
+                query = query.Where(x => x.EmployeeId == employeeId.Value);
+            }
+
+            return await query.CountAsync();
+        }
+
         public async Task<List<LeaveRequest>> GetPendingLeaveRequestListAsync()
         {
             return await LeaveRequestQuery()

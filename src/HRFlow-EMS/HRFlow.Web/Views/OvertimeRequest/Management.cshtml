@@ -1,0 +1,62 @@
+@using HRFlow.Common.Enums
+@model List<HRFlow.Business.DTOs.OvertimeRequest.OvertimeRequestListDto>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title mb-0">Fazla Mesai Yönetimi</h3>
+    </div>
+    <div class="card-body p-0">
+        <table id="overtimeManagementTable" class="table table-bordered table-striped table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>Tarih</th>
+                    <th>Saat Aralığı</th>
+                    <th>Toplam Saat</th>
+                    <th>Açıklama</th>
+                    <th>Durum</th>
+                    <th class="text-center" style="width: 230px;">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.FullName</td>
+                        <td>@item.WorkDate.ToString("dd.MM.yyyy")</td>
+                        <td>@item.StartTime.ToString("hh\\:mm") - @item.EndTime.ToString("hh\\:mm")</td>
+                        <td>@item.TotalHours.ToString("0.##")</td>
+                        <td>@item.Description</td>
+                        <td>@item.Status</td>
+                        <td class="text-center">
+                            <form asp-action="ChangeStatus" method="post" class="d-flex gap-1 status-form">
+                                <input type="hidden" name="Id" value="@item.Id" />
+                                <select name="Status" class="form-select form-select-sm">
+                                    @foreach (var status in Enum.GetValues<OvertimeStatus>())
+                                    {
+                                        <option value="@status" selected="@(status == item.Status)">@status</option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-warning btn-sm">Kaydet</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        initializeDataTable('#overtimeManagementTable', { columnDefs: [{ targets: 6, orderable: false }] });
+
+        document.querySelectorAll('.status-form').forEach(form => {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                Swal.fire({ title: 'Durumu güncellemek istiyor musunuz?', icon: 'question', showCancelButton: true, confirmButtonText: 'Evet, Kaydet', cancelButtonText: 'Vazgeç', reverseButtons: true })
+                    .then(result => { if (result.isConfirmed) form.submit(); });
+            });
+        });
+    </script>
+}

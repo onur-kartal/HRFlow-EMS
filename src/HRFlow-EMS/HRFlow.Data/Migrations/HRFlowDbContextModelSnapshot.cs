@@ -22,6 +22,55 @@ namespace HRFlow.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("HRFlow.Entities.HumanResources.Announcement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Announcements");
+                });
+
             modelBuilder.Entity("HRFlow.Entities.HumanResources.Employee", b =>
                 {
                     b.Property<int>("Id")
@@ -177,6 +226,64 @@ namespace HRFlow.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("LeaveTypes");
+                });
+
+            modelBuilder.Entity("HRFlow.Entities.HumanResources.OvertimeRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApprovedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalHours")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("WorkDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("OvertimeRequests");
                 });
 
             modelBuilder.Entity("HRFlow.Entities.Identity.SystemUser", b =>
@@ -490,6 +597,17 @@ namespace HRFlow.Data.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("LeaveType");
+                });
+
+            modelBuilder.Entity("HRFlow.Entities.HumanResources.OvertimeRequest", b =>
+                {
+                    b.HasOne("HRFlow.Entities.HumanResources.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("HRFlow.Entities.Identity.SystemUser", b =>

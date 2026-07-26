@@ -1,0 +1,56 @@
+@model HRFlow.Business.DTOs.OvertimeRequest.OvertimeRequestCreateDto
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title mb-0">Yeni Fazla Mesai Talebi</h3>
+    </div>
+
+    <form asp-action="Create" method="post">
+        <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="WorkDate" class="form-label">Çalışma Tarihi</label>
+                        <input asp-for="WorkDate" type="date" class="form-control" />
+                        <span asp-validation-for="WorkDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="StartTime" class="form-label">Başlangıç Saati</label>
+                        <input asp-for="StartTime" type="time" class="form-control" />
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="EndTime" class="form-label">Bitiş Saati</label>
+                        <input asp-for="EndTime" type="time" class="form-control" />
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Açıklama</label>
+                <textarea asp-for="Description" rows="4" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> Kaydet
+            </button>
+            <a asp-action="MyRequests" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Vazgeç
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
