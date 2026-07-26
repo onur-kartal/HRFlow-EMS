@@ -2,6 +2,8 @@
 using HRFlow.Business.Interfaces;
 using HRFlow.Data.Context;
 using HRFlow.Entities.Identity;
+using HRFlow.Business.DTOs.Logging;
+using HRFlow.Entities.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -20,6 +22,7 @@ namespace HRFlow.Business.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ICurrentUserService _currentUser;
         private readonly AutoMapper.IMapper _mapper;
+        private readonly IAuditLogService _auditLogService;
 
         public AccountService(
             SignInManager<SystemUser> signInManager,
@@ -27,7 +30,8 @@ namespace HRFlow.Business.Services
             HRFlowDbContext context,
             RoleManager<IdentityRole> roleManager,
             ICurrentUserService currentUser,
-            AutoMapper.IMapper mapper)
+            AutoMapper.IMapper mapper,
+            IAuditLogService auditLogService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -35,6 +39,7 @@ namespace HRFlow.Business.Services
             _roleManager = roleManager;
             _currentUser = currentUser;
             _mapper = mapper;
+            _auditLogService = auditLogService;
         }
 
         public async Task<bool> ChangeRoleAsync(ChangeRoleDto model)
@@ -57,6 +62,8 @@ namespace HRFlow.Business.Services
 
             var addResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
 
+            if (addResult.Succeeded)
+                await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.Role, Action = AuditAction.RoleChanged, EntityId = model.EmployeeId, Description = "Kullanıcı rolü değiştirildi." });
             return addResult.Succeeded;
         }
 
@@ -89,6 +96,7 @@ namespace HRFlow.Business.Services
 
             await _userManager.AddToRoleAsync(user, "Employee");
 
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.User, Action = AuditAction.Created, EntityId = employeeId, Description = "Çalışan için kullanıcı hesabı oluşturuldu." });
             return true;
         }
 
@@ -145,7 +153,10 @@ namespace HRFlow.Business.Services
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user == null)
+            {
+                await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.Authentication, Action = AuditAction.LoginFailed, UserName = model.Email, Description = "Başarısız giriş denemesi." });
                 return false;
+            }
 
             var result = await _signInManager.PasswordSignInAsync(
                 user,
@@ -153,12 +164,14 @@ namespace HRFlow.Business.Services
                 model.RememberMe,
                 lockoutOnFailure: false);
 
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.Authentication, Action = result.Succeeded ? AuditAction.LoginSuccess : AuditAction.LoginFailed, UserId = user.Id, EmployeeId = user.EmployeeId, UserName = user.UserName, Description = result.Succeeded ? "Başarılı giriş." : "Başarısız giriş denemesi." });
             return result.Succeeded;
         }
 
         public async Task LogoutAsync()
         {
             await _signInManager.SignOutAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.Authentication, Action = AuditAction.Logout, Description = "Kullanıcı çıkış yaptı." });
         }
 
         public async Task<ProfileDto?> GetProfileAsync()
@@ -200,10 +213,13 @@ namespace HRFlow.Business.Services
                     Description = "Giriş yapan kullanıcı bulunamadı."
                 });
 
-            return await _userManager.ChangePasswordAsync(
+            var result = await _userManager.ChangePasswordAsync(
                 user,
                 model.CurrentPassword,
                 model.NewPassword);
+            if (result.Succeeded)
+                await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.Authentication, Action = AuditAction.PasswordChanged, Description = "Parola değiştirildi." });
+            return result;
         }
     }
 }

@@ -6,6 +6,8 @@ using HRFlow.Data.Interfaces;
 using HRFlow.Data.Repositories;
 using HRFlow.Entities.HumanResources;
 using HRFlow.Entities.Organization;
+using HRFlow.Business.DTOs.Logging;
+using HRFlow.Entities.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,13 +24,14 @@ namespace HRFlow.Business.Services
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IPositionRepository _positionRepository;
         private readonly IAccountService _accountService;
+        private readonly IAuditLogService _auditLogService;
 
         public EmployeeService(
          IGenericRepository<Employee> repository,
          IEmployeeRepository employeeRepository,
          IDepartmentRepository departmentRepository,
          IPositionRepository positionRepository,
-         IAccountService accountService,
+         IAccountService accountService, IAuditLogService auditLogService,
          IMapper mapper)
          : base(repository)
         {
@@ -37,6 +40,7 @@ namespace HRFlow.Business.Services
             _departmentRepository = departmentRepository;
             _positionRepository = positionRepository;
             _accountService = accountService;
+            _auditLogService = auditLogService;
         }
 
         public async Task CreateAsync(EmployeeCreateDto dto)
@@ -46,6 +50,7 @@ namespace HRFlow.Business.Services
             await _repository.AddAsync(employee);
 
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.Employee, Action=AuditAction.Created, EntityId=employee.Id, Description=$"{employee.FirstName} {employee.LastName} isimli çalışan oluşturuldu." });
         }
 
         public async Task<List<EmployeeListDto>> GetEmployeeListAsync()
@@ -96,6 +101,7 @@ namespace HRFlow.Business.Services
             _repository.Update(employee);
 
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.Employee, Action=AuditAction.Updated, EntityId=employee.Id, Description=$"{employee.FirstName} {employee.LastName} isimli çalışan güncellendi." });
         }
 
         public async Task<List<EmployeeLookupDto>> GetEmployeeLookupAsync()
@@ -103,6 +109,12 @@ namespace HRFlow.Business.Services
             var employees = await _employeeRepository.GetEmployeeListAsync();
 
             return _mapper.Map<List<EmployeeLookupDto>>(employees);
+        }
+        public override async Task DeleteAsync(int id)
+        {
+            var employee = await _repository.GetByIdAsync(id); if (employee == null) return;
+            _repository.Delete(employee); await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.Employee, Action=AuditAction.Deleted, EntityId=id, Description=$"{employee.FirstName} {employee.LastName} isimli çalışan silindi." });
         }
     }
 }

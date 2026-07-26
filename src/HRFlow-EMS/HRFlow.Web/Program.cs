@@ -28,6 +28,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
+app.UseMiddleware<HRFlow.Web.Middleware.RequestLoggingMiddleware>();
 app.UseAuthorization();
 
 app.MapStaticAssets();

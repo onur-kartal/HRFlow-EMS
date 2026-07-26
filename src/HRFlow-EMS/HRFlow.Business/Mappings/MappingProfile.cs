@@ -6,6 +6,8 @@ using HRFlow.Business.DTOs.LeaveType;
 using HRFlow.Business.DTOs.Position;
 using HRFlow.Business.DTOs.OvertimeRequest;
 using HRFlow.Business.DTOs.Announcement;
+using HRFlow.Business.DTOs.Logging;
+using HRFlow.Entities.Logging;
 using HRFlow.Entities.HumanResources;
 using HRFlow.Entities.Organization;
 using System;
@@ -147,6 +149,11 @@ namespace HRFlow.Business.Mappings
             CreateMap<Announcement, AnnouncementListDto>();
 
             CreateMap<Announcement, AnnouncementDashboardDto>();
+
+            CreateMap<AuditLogCreateDto, AuditLog>();
+            CreateMap<AuditLog, AuditLogListDto>();
+            CreateMap<RequestLogCreateDto, RequestLog>();
+            CreateMap<RequestLog, RequestLogListDto>();
         }
     }
 }

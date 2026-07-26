@@ -6,6 +6,8 @@ using HRFlow.Common.Enums;
 using HRFlow.Common.Interfaces;
 using HRFlow.Data.Interfaces;
 using HRFlow.Entities.HumanResources;
+using HRFlow.Business.DTOs.Logging;
+using HRFlow.Entities.Enums;
 
 namespace HRFlow.Business.Services
 {
@@ -14,17 +16,19 @@ namespace HRFlow.Business.Services
         private readonly IOvertimeRequestRepository _overtimeRequestRepository;
         private readonly ICurrentUserService _currentUser;
         private readonly IMapper _mapper;
+        private readonly IAuditLogService _auditLogService;
 
         public OvertimeRequestService(
             IGenericRepository<OvertimeRequest> repository,
             IOvertimeRequestRepository overtimeRequestRepository,
             ICurrentUserService currentUser,
-            IMapper mapper)
+            IMapper mapper, IAuditLogService auditLogService)
             : base(repository)
         {
             _overtimeRequestRepository = overtimeRequestRepository;
             _currentUser = currentUser;
             _mapper = mapper;
+            _auditLogService = auditLogService;
         }
 
         public async Task CreateAsync(OvertimeRequestCreateDto dto)
@@ -53,6 +57,7 @@ namespace HRFlow.Business.Services
 
             await _repository.AddAsync(overtimeRequest);
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.OvertimeRequest, Action=AuditAction.Created, EntityId=overtimeRequest.Id, Description="Fazla mesai talebi oluşturuldu." });
         }
 
         public async Task<List<OvertimeRequestListDto>> GetMyRequestsAsync()
@@ -121,6 +126,7 @@ namespace HRFlow.Business.Services
 
             _repository.Update(overtimeRequest);
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.OvertimeRequest, Action=AuditAction.Cancelled, EntityId=overtimeRequest.Id, Description="Fazla mesai talebi iptal edildi." });
         }
 
         public async Task ChangeStatusAsync(OvertimeRequestStatusChangeDto dto)
@@ -146,6 +152,7 @@ namespace HRFlow.Business.Services
 
             _repository.Update(overtimeRequest);
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.OvertimeRequest, Action=AuditAction.StatusChanged, EntityId=overtimeRequest.Id, Description="Fazla mesai talebinin durumu değiştirildi." });
         }
 
         private async Task UpdatePendingRequestStatusAsync(int id, OvertimeStatus status)
@@ -174,6 +181,7 @@ namespace HRFlow.Business.Services
 
             _repository.Update(overtimeRequest);
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.OvertimeRequest, Action=status == OvertimeStatus.Approved ? AuditAction.Approved : AuditAction.Rejected, EntityId=overtimeRequest.Id, Description=status == OvertimeStatus.Approved ? "Fazla mesai talebi onaylandı." : "Fazla mesai talebi reddedildi." });
         }
 
         private void ClearApprovalInformation(OvertimeRequest overtimeRequest)

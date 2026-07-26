@@ -23,7 +23,7 @@ namespace HRFlow.Business.Services
             await _repository.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public virtual async Task DeleteAsync(int id)
         {
             var entity = await _repository.GetByIdAsync(id);
 

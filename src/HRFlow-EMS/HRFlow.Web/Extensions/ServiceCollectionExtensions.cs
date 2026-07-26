@@ -84,6 +84,11 @@ namespace HRFlow.Web.Extensions
             services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
             services.AddScoped<IAnnouncementService, AnnouncementService>();
 
+            services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+            services.AddScoped<IAuditLogService, AuditLogService>();
+            services.AddScoped<IRequestLogRepository, RequestLogRepository>();
+            services.AddScoped<IRequestLogService, RequestLogService>();
+
             services.AddScoped<IAccountService, AccountService>();
 
             services.AddHttpContextAccessor();

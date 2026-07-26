@@ -5,6 +5,8 @@ using HRFlow.Common.Constants;
 using HRFlow.Common.Interfaces;
 using HRFlow.Data.Interfaces;
 using HRFlow.Entities.HumanResources;
+using HRFlow.Business.DTOs.Logging;
+using HRFlow.Entities.Enums;
 
 namespace HRFlow.Business.Services
 {
@@ -13,17 +15,19 @@ namespace HRFlow.Business.Services
         private readonly IAnnouncementRepository _announcementRepository;
         private readonly ICurrentUserService _currentUser;
         private readonly IMapper _mapper;
+        private readonly IAuditLogService _auditLogService;
 
         public AnnouncementService(
             IGenericRepository<Announcement> repository,
             IAnnouncementRepository announcementRepository,
             ICurrentUserService currentUser,
-            IMapper mapper)
+            IMapper mapper, IAuditLogService auditLogService)
             : base(repository)
         {
             _announcementRepository = announcementRepository;
             _currentUser = currentUser;
             _mapper = mapper;
+            _auditLogService = auditLogService;
         }
 
         public async Task<List<AnnouncementListDto>> GetAnnouncementListAsync()
@@ -49,6 +53,7 @@ namespace HRFlow.Business.Services
 
             await _repository.AddAsync(announcement);
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.Announcement, Action=AuditAction.Created, EntityId=announcement.Id, Description="Duyuru oluşturuldu." });
         }
 
         public async Task<AnnouncementUpdateDto?> GetByIdForUpdateAsync(int id)
@@ -76,6 +81,7 @@ namespace HRFlow.Business.Services
 
             _repository.Update(announcement);
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.Announcement, Action=AuditAction.Updated, EntityId=announcement.Id, Description="Duyuru güncellendi." });
         }
 
         public async Task DeleteAnnouncementAsync(int id)
@@ -89,6 +95,7 @@ namespace HRFlow.Business.Services
 
             _repository.Delete(announcement);
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.Announcement, Action=AuditAction.Deleted, EntityId=announcement.Id, Description="Duyuru silindi." });
         }
 
         public async Task ChangeStatusAsync(int id)
@@ -104,6 +111,7 @@ namespace HRFlow.Business.Services
 
             _repository.Update(announcement);
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.Announcement, Action=AuditAction.StatusChanged, EntityId=announcement.Id, Description=announcement.IsActive ? "Duyuru aktif duruma alındı." : "Duyuru pasif duruma alındı." });
         }
 
         public async Task<List<AnnouncementDashboardDto>> GetActiveDashboardAnnouncementsAsync(int count)

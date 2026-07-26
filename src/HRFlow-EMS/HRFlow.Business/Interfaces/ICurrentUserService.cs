@@ -16,6 +16,8 @@ namespace HRFlow.Business.Interfaces
 
         string? Email { get; }
 
+        string? IpAddress { get; }
+
         bool IsAuthenticated { get; }
 
         bool IsInRole(string role);

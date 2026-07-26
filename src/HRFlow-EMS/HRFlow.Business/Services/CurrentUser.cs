@@ -38,6 +38,9 @@ namespace HRFlow.Business.Services
         public string? Email =>
             User?.FindFirstValue(ClaimTypes.Email);
 
+        public string? IpAddress =>
+            _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+
         public int EmployeeId
         {
             get

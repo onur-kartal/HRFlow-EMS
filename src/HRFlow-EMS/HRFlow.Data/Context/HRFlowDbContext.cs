@@ -1,6 +1,7 @@
 ﻿using HRFlow.Entities.HumanResources;
 using HRFlow.Entities.Identity;
 using HRFlow.Entities.Organization;
+using HRFlow.Entities.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,10 @@ namespace HRFlow.Data.Context
         public DbSet<OvertimeRequest> OvertimeRequests => Set<OvertimeRequest>();
 
         public DbSet<Announcement> Announcements => Set<Announcement>();
+
+        public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+
+        public DbSet<RequestLog> RequestLogs => Set<RequestLog>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

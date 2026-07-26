@@ -7,6 +7,8 @@ using HRFlow.Common.Interfaces;
 using HRFlow.Data.Interfaces;
 using HRFlow.Entities.HumanResources;
 using HRFlow.Entities.Organization;
+using HRFlow.Business.DTOs.Logging;
+using HRFlow.Entities.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +22,19 @@ namespace HRFlow.Business.Services
         private readonly ILeaveRequestRepository _leaveRequestRepository;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUser;
+        private readonly IAuditLogService _auditLogService;
 
         public LeaveRequestService(
             IGenericRepository<LeaveRequest> repository,
             ILeaveRequestRepository leaveRequestRepository,
             ICurrentUserService currentUser,
-            IMapper mapper)
+            IMapper mapper, IAuditLogService auditLogService)
             : base(repository)
         {
             _leaveRequestRepository = leaveRequestRepository;
             _currentUser = currentUser;
             _mapper = mapper;
+            _auditLogService = auditLogService;
         }
 
         public async Task ApproveAsync(LeaveRequestApproveDto dto)
@@ -51,6 +55,7 @@ namespace HRFlow.Business.Services
 
             _repository.Update(leaveRequest);
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.LeaveRequest, Action = AuditAction.Approved, EntityId = leaveRequest.Id, Description = "İzin talebi onaylandı." });
         }
 
         public async Task CreateAsync(LeaveRequestCreateDto dto)
@@ -73,6 +78,7 @@ namespace HRFlow.Business.Services
 
             await _repository.AddAsync(leaveRequest);
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.LeaveRequest, Action = AuditAction.Created, EntityId = leaveRequest.Id, Description = "İzin talebi oluşturuldu." });
         }
 
         public async Task CancelAsync(int id)
@@ -165,6 +171,8 @@ namespace HRFlow.Business.Services
 
             _repository.Update(leaveRequest);
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.LeaveRequest, Action = AuditAction.Rejected, EntityId = leaveRequest.Id, Description = "İzin talebi reddedildi." });
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.LeaveRequest, Action = AuditAction.Cancelled, EntityId = leaveRequest.Id, Description = "İzin talebi iptal edildi." });
         }
 
         public async Task UpdateAsync(LeaveRequestUpdateDto dto)
@@ -203,6 +211,7 @@ namespace HRFlow.Business.Services
             _repository.Update(leaveRequest);
 
             await _repository.SaveChangesAsync();
+            await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.LeaveRequest, Action = AuditAction.Updated, EntityId = leaveRequest.Id, Description = "İzin talebi güncellendi." });
         }
         public async Task<List<UpcomingLeaveDto>> GetUpcomingLeaveRequestsAsync(int count)
         {
