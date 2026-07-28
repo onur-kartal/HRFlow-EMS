@@ -1,21 +1,11 @@
-namespace HRFlow.Business.DTOs.Account
+namespace HRFlow.Business.DTOs.Employee
 {
-    public class ProfileDto
+    public class EmployeeDetailDto
     {
-        public string FullName { get; set; } = string.Empty;
-
-        public string UserName { get; set; } = string.Empty;
-
-        public string Email { get; set; } = string.Empty;
-
-        public string DepartmentName { get; set; } = string.Empty;
-
-        public string PositionName { get; set; } = string.Empty;
-
-        public string RoleName { get; set; } = string.Empty;
-
+        public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public string? PhoneNumber { get; set; }
         public string? PersonalEmail { get; set; }
         public DateTime? BirthDate { get; set; }
@@ -25,5 +15,7 @@ namespace HRFlow.Business.DTOs.Account
         public string? District { get; set; }
         public string? PostalCode { get; set; }
         public DateTime HireDate { get; set; }
+        public string DepartmentName { get; set; } = string.Empty;
+        public string PositionName { get; set; } = string.Empty;
     }
 }

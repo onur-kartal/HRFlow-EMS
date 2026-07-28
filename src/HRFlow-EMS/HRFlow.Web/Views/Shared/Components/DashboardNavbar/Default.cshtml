@@ -1,11 +1,15 @@
 ﻿
 @using HRFlow.Common.Constants
+@model HRFlow.Business.DTOs.Account.ProfileDto?
 
 @{
     var currentRole = User.IsInRole(Roles.Admin) ? Roles.Admin :
                       User.IsInRole(Roles.HR) ? Roles.HR :
                       User.IsInRole(Roles.Manager) ? Roles.Manager :
                       Roles.Employee;
+    var profileImagePath = string.IsNullOrWhiteSpace(Model?.ProfileImagePath)
+        ? Url.Content("~/adminlte/dist/assets/img/user2-160x160.jpg")
+        : Model.ProfileImagePath;
 }
 
 <ul class="navbar-nav">
@@ -201,7 +205,7 @@
     <!--begin::User Menu Dropdown-->
     <li class="nav-item dropdown user-menu">
         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-            <img src="~/adminlte/dist/assets/img/user2-160x160.jpg"
+            <img src="@profileImagePath"
                  class="user-image rounded-circle shadow"
                  alt="User" />
             <span class="d-none d-md-inline">@User.Identity?.Name</span>
@@ -211,7 +215,7 @@
 
             <li class="user-header text-bg-primary">
 
-                <img src="~/adminlte/dist/assets/img/user2-160x160.jpg"
+                <img src="@profileImagePath"
                      class="rounded-circle shadow"
                      alt="User" />
 

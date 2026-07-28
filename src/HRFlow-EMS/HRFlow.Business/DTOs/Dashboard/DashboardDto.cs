@@ -21,6 +21,7 @@ namespace HRFlow.Business.DTOs.Dashboard
         public List<PendingLeaveDto> PendingLeaveRequests { get; set; } = new();
         public List<UpcomingLeaveDto> UpcomingLeaveRequests { get; set; } = new();
         public List<AnnouncementDashboardDto> Announcements { get; set; } = new();
+        public List<UpcomingBirthdayDto> UpcomingBirthdays { get; set; } = new();
     }
 }
 

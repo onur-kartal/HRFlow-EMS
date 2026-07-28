@@ -1,4 +1,5 @@
 using HRFlow.Business.DTOs.Announcement;
+using HRFlow.Business.DTOs.Employee;
 
 namespace HRFlow.Business.DTOs.Dashboard
 {
@@ -9,5 +10,6 @@ namespace HRFlow.Business.DTOs.Dashboard
         public int RejectedLeaveCount { get; set; }
         public int CancelledLeaveCount { get; set; }
         public List<AnnouncementDashboardDto> Announcements { get; set; } = new();
+        public List<UpcomingBirthdayDto> UpcomingBirthdays { get; set; } = new();
     }
 }

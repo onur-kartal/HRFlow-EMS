@@ -23,6 +23,8 @@ namespace HRFlow.Business.Interfaces
 
         Task<ProfileDto?> GetProfileAsync();
 
+        Task<bool> UpdateProfileAsync(ProfileUpdateDto model);
+
         Task<Microsoft.AspNetCore.Identity.IdentityResult> ChangePasswordAsync(ChangePasswordDto model);
     }
 }

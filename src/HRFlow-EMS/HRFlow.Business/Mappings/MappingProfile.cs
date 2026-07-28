@@ -33,6 +33,17 @@ namespace HRFlow.Business.Mappings
                     opt => opt.MapFrom(src => src.Employee.Department.Name))
                 .ForMember(dest => dest.PositionName,
                     opt => opt.MapFrom(src => src.Employee.Position.Name))
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Employee.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Employee.LastName))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Employee.PhoneNumber))
+                .ForMember(dest => dest.PersonalEmail, opt => opt.MapFrom(src => src.Employee.PersonalEmail))
+                .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.Employee.BirthDate))
+                .ForMember(dest => dest.ProfileImagePath, opt => opt.MapFrom(src => src.Employee.ProfileImagePath))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Employee.Address))
+                .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.Employee.City))
+                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.Employee.District))
+                .ForMember(dest => dest.PostalCode, opt => opt.MapFrom(src => src.Employee.PostalCode))
+                .ForMember(dest => dest.HireDate, opt => opt.MapFrom(src => src.Employee.HireDate))
                 .ForMember(dest => dest.RoleName,
                     opt => opt.Ignore());
 
@@ -57,6 +68,17 @@ namespace HRFlow.Business.Mappings
             CreateMap<EmployeeUpdateDto, Employee>();
 
             CreateMap<Employee, EmployeeUpdateDto>();
+
+            CreateMap<Employee, EmployeeDetailDto>()
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department.Name))
+                .ForMember(dest => dest.PositionName, opt => opt.MapFrom(src => src.Position.Name));
+
+            CreateMap<Employee, UpcomingBirthdayDto>()
+                .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FirstName + " " + src.LastName))
+                .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position.Name))
+                .ForMember(dest => dest.BirthDate, opt => opt.MapFrom(src => src.BirthDate!.Value))
+                .ForMember(dest => dest.DaysLeft, opt => opt.Ignore());
 
             CreateMap<Employee, EmployeeLookupDto>()
                     .ForMember(dest => dest.FullName,

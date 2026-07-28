@@ -10,5 +10,6 @@ namespace HRFlow.Web.Models.Employee
         public List<SelectListItem> Departments { get; set; } = new();
 
         public List<SelectListItem> Positions { get; set; } = new();
+        public IFormFile? ProfileImage { get; set; }
     }
 }

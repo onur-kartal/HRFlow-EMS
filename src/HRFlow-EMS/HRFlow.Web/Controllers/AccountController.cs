@@ -64,8 +64,36 @@ namespace HRFlow.Web.Controllers
 
             return View(new HRFlow.Web.Models.Account.ProfileViewModel
             {
-                Profile = profile
+                Profile = profile,
+                ProfileUpdate = new ProfileUpdateDto
+                {
+                    PhoneNumber = profile.PhoneNumber,
+                    PersonalEmail = profile.PersonalEmail,
+                    Address = profile.Address,
+                    City = profile.City,
+                    District = profile.District,
+                    PostalCode = profile.PostalCode
+                }
             });
+        }
+
+        [Authorize(Roles = HRFlow.Common.Constants.Roles.Admin + "," + HRFlow.Common.Constants.Roles.HR)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProfile([Bind(Prefix = "ProfileUpdate")] ProfileUpdateDto model)
+        {
+            var profile = await _accountService.GetProfileAsync();
+            if (profile == null)
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return View("Profile", new HRFlow.Web.Models.Account.ProfileViewModel { Profile = profile, ProfileUpdate = model });
+
+            if (!await _accountService.UpdateProfileAsync(model))
+                return NotFound();
+
+            TempData["Success"] = "Profil bilgileriniz başarıyla güncellendi.";
+            return RedirectToAction(nameof(Profile));
         }
 
         [Authorize]

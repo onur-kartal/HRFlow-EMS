@@ -7,5 +7,6 @@ namespace HRFlow.Web.Models.Account
         public ProfileDto Profile { get; set; } = new();
 
         public ChangePasswordDto ChangePassword { get; set; } = new();
+        public ProfileUpdateDto ProfileUpdate { get; set; } = new();
     }
 }

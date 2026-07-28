@@ -197,6 +197,29 @@ namespace HRFlow.Business.Services
             return profile;
         }
 
+        public async Task<bool> UpdateProfileAsync(ProfileUpdateDto model)
+        {
+            if (string.IsNullOrWhiteSpace(_currentUser.UserId))
+                return false;
+
+            var user = await _userManager.Users
+                .Include(x => x.Employee)
+                .FirstOrDefaultAsync(x => x.Id == _currentUser.UserId);
+
+            if (user?.Employee == null)
+                return false;
+
+            user.Employee.PhoneNumber = model.PhoneNumber;
+            user.Employee.PersonalEmail = model.PersonalEmail;
+            user.Employee.Address = model.Address;
+            user.Employee.City = model.City;
+            user.Employee.District = model.District;
+            user.Employee.PostalCode = model.PostalCode;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<IdentityResult> ChangePasswordAsync(ChangePasswordDto model)
         {
             if (string.IsNullOrWhiteSpace(_currentUser.UserId))

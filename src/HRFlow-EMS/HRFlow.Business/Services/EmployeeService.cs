@@ -45,6 +45,7 @@ namespace HRFlow.Business.Services
 
         public async Task CreateAsync(EmployeeCreateDto dto)
         {
+            EnsureBirthDateIsValid(dto.BirthDate);
             var employee = _mapper.Map<Employee>(dto);
 
             await _repository.AddAsync(employee);
@@ -91,6 +92,7 @@ namespace HRFlow.Business.Services
 
         public async Task UpdateAsync(EmployeeUpdateDto dto)
         {
+            EnsureBirthDateIsValid(dto.BirthDate);
             var employee = await _repository.GetByIdAsync(dto.Id);
 
             if (employee == null)
@@ -109,6 +111,54 @@ namespace HRFlow.Business.Services
             var employees = await _employeeRepository.GetEmployeeListAsync();
 
             return _mapper.Map<List<EmployeeLookupDto>>(employees);
+        }
+
+        public async Task<EmployeeDetailDto?> GetEmployeeDetailAsync(int id)
+        {
+            var employee = await _employeeRepository.GetEmployeeDetailAsync(id);
+            return employee == null ? null : _mapper.Map<EmployeeDetailDto>(employee);
+        }
+
+        public async Task<List<UpcomingBirthdayDto>> GetUpcomingBirthdaysAsync()
+        {
+            var employees = await _employeeRepository.GetEmployeesWithBirthDateAsync();
+            var birthdays = _mapper.Map<List<UpcomingBirthdayDto>>(employees);
+            var today = DateTime.Today;
+
+            foreach (var birthday in birthdays)
+            {
+                birthday.DaysLeft = GetDaysUntilBirthday(birthday.BirthDate, today);
+            }
+
+            return birthdays
+                .Where(x => x.DaysLeft >= 0 && x.DaysLeft <= 5)
+                .OrderBy(x => x.DaysLeft)
+                .ThenBy(x => x.FullName)
+                .ToList();
+        }
+
+        private static void EnsureBirthDateIsValid(DateTime? birthDate)
+        {
+            if (birthDate.HasValue && birthDate.Value.Date > DateTime.Today)
+                throw new ArgumentException("Doğum tarihi gelecekte olamaz.");
+        }
+
+        private static int GetDaysUntilBirthday(DateTime birthDate, DateTime today)
+        {
+            var birthdayThisYear = GetBirthdayDate(birthDate, today.Year);
+            var nextBirthday = birthdayThisYear < today
+                ? GetBirthdayDate(birthDate, today.Year + 1)
+                : birthdayThisYear;
+
+            return (nextBirthday - today).Days;
+        }
+
+        private static DateTime GetBirthdayDate(DateTime birthDate, int year)
+        {
+            if (birthDate.Month == 2 && birthDate.Day == 29 && !DateTime.IsLeapYear(year))
+                return new DateTime(year, 2, 28);
+
+            return new DateTime(year, birthDate.Month, birthDate.Day);
         }
         public override async Task DeleteAsync(int id)
         {

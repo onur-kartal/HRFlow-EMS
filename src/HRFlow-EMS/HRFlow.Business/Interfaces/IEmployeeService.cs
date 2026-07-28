@@ -23,5 +23,7 @@ namespace HRFlow.Business.Interfaces
         Task UpdateAsync(EmployeeUpdateDto dto);
 
         Task<List<EmployeeLookupDto>> GetEmployeeLookupAsync();
+        Task<EmployeeDetailDto?> GetEmployeeDetailAsync(int id);
+        Task<List<UpcomingBirthdayDto>> GetUpcomingBirthdaysAsync();
     }
 }

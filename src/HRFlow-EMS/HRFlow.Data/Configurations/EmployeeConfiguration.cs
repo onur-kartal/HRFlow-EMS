@@ -29,6 +29,12 @@ namespace HRFlow.Data.Configurations
 
             builder.Property(x => x.PhoneNumber)
                    .HasMaxLength(20);
+            builder.Property(x => x.PersonalEmail).HasMaxLength(150);
+            builder.Property(x => x.ProfileImagePath).HasMaxLength(500);
+            builder.Property(x => x.Address).HasMaxLength(500);
+            builder.Property(x => x.City).HasMaxLength(100);
+            builder.Property(x => x.District).HasMaxLength(100);
+            builder.Property(x => x.PostalCode).HasMaxLength(10);
 
             builder.Property(x => x.Salary)
                    .HasColumnType("decimal(18,2)");

@@ -1,0 +1,34 @@
+@model IEnumerable<HRFlow.Business.DTOs.Employee.UpcomingBirthdayDto>
+
+@{
+    const string defaultAvatar = "/adminlte/dist/assets/img/user2-160x160.jpg";
+}
+
+<div class="card h-100">
+    <div class="card-header">
+        <h3 class="card-title fw-semibold">🎂 Upcoming Birthdays</h3>
+    </div>
+    <div class="card-body p-0" style="height: 360px; overflow-y: auto;">
+        @if (Model.Any())
+        {
+            <div class="list-group list-group-flush">
+                @foreach (var employee in Model)
+                {
+                    var imagePath = string.IsNullOrWhiteSpace(employee.ProfileImagePath) ? defaultAvatar : employee.ProfileImagePath;
+                    var remainingText = employee.DaysLeft switch { 0 => "Today", 1 => "Tomorrow", _ => $"{employee.DaysLeft} days left" };
+                    <div class="list-group-item">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="@imagePath" alt="@employee.FullName" class="img-circle" style="width: 44px; height: 44px; object-fit: cover;" />
+                            <div class="flex-grow-1"><div class="fw-semibold">@employee.FullName @(employee.DaysLeft == 0 ? "🎉" : string.Empty)</div><div class="small text-body-secondary">@employee.Position</div></div>
+                            <span class="small @(employee.DaysLeft == 0 ? "text-success fw-semibold" : "text-body-secondary")">@remainingText</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center text-body-secondary py-5">Önümüzdeki 5 gün için doğum günü bulunmuyor.</div>
+        }
+    </div>
+</div>

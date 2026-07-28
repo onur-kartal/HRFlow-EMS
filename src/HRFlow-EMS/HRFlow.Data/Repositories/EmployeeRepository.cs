@@ -61,5 +61,21 @@ namespace HRFlow.Data.Repositories
                 .Include(x => x.Department)
                 .ToListAsync();
         }
+
+        public async Task<Employee?> GetEmployeeDetailAsync(int id)
+        {
+            return await EmployeeDetailQuery()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<List<Employee>> GetEmployeesWithBirthDateAsync()
+        {
+            return await EmployeeQuery()
+                .Where(x => x.IsActive && x.BirthDate.HasValue)
+                .Include(x => x.Position)
+                .AsNoTracking()
+                .ToListAsync();
+        }
     }
 }

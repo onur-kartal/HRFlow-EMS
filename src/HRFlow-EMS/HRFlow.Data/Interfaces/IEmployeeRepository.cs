@@ -14,5 +14,7 @@ namespace HRFlow.Data.Interfaces
         Task<int> GetEmployeeCountAsync();
         Task<List<Employee>> GetLastEmployeesAsync(int count);
         Task<List<Employee>> GetEmployeesWithDepartmentAsync();
+        Task<Employee?> GetEmployeeDetailAsync(int id);
+        Task<List<Employee>> GetEmployeesWithBirthDateAsync();
     }
 }

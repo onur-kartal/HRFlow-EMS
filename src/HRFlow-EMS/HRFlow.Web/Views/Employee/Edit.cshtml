@@ -1,56 +1,25 @@
-﻿@model HRFlow.Web.Models.Employee.EmployeeEditViewModel
+@model HRFlow.Web.Models.Employee.EmployeeEditViewModel
 
-
-
-<h2>Çalışan bilgilerini düzenle</h2>
-
-<form asp-action="Edit" method="post">
+<h2>Çalışan Bilgilerini Düzenle</h2>
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
     <input asp-for="Employee.Id" type="hidden" />
-    <div class="mb-3">
-        <label>Ad</label>
-        <input asp-for="Employee.FirstName" class="form-control" />
-        <span asp-validation-for="Employee.FirstName" class="text-danger"></span>
+    <input asp-for="Employee.ProfileImagePath" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row g-3">
+        <div class="col-md-6"><label asp-for="Employee.FirstName">Ad</label><input asp-for="Employee.FirstName" class="form-control" /><span asp-validation-for="Employee.FirstName" class="text-danger"></span></div>
+        <div class="col-md-6"><label asp-for="Employee.LastName">Soyad</label><input asp-for="Employee.LastName" class="form-control" /><span asp-validation-for="Employee.LastName" class="text-danger"></span></div>
+        <div class="col-md-6"><label asp-for="Employee.Email">Şirket E-postası</label><input asp-for="Employee.Email" class="form-control" /><span asp-validation-for="Employee.Email" class="text-danger"></span></div>
+        <div class="col-md-6"><label asp-for="Employee.PhoneNumber">Telefon Numarası</label><input asp-for="Employee.PhoneNumber" class="form-control" /><span asp-validation-for="Employee.PhoneNumber" class="text-danger"></span></div>
+        <div class="col-md-6"><label asp-for="Employee.PersonalEmail">Kişisel E-posta</label><input asp-for="Employee.PersonalEmail" class="form-control" /><span asp-validation-for="Employee.PersonalEmail" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="Employee.BirthDate">Doğum Tarihi</label><input asp-for="Employee.BirthDate" type="date" class="form-control" /></div>
+        <div class="col-md-4"><label asp-for="ProfileImage">Profil Fotoğrafı</label><input asp-for="ProfileImage" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp" /><span asp-validation-for="ProfileImage" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="Employee.PostalCode">Posta Kodu</label><input asp-for="Employee.PostalCode" class="form-control" /><span asp-validation-for="Employee.PostalCode" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="Employee.DepartmentId">Departman</label><select asp-for="Employee.DepartmentId" asp-items="Model.Departments" class="form-select"><option value="0">Seçiniz</option></select><span asp-validation-for="Employee.DepartmentId" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="Employee.PositionId">Pozisyon</label><select asp-for="Employee.PositionId" asp-items="Model.Positions" class="form-select"><option value="0">Seçiniz</option></select><span asp-validation-for="Employee.PositionId" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="Employee.City">Şehir</label><input asp-for="Employee.City" class="form-control" /></div>
+        <div class="col-md-6"><label asp-for="Employee.District">İlçe</label><input asp-for="Employee.District" class="form-control" /></div>
+        <div class="col-md-6"><label asp-for="Employee.Address">Adres</label><textarea asp-for="Employee.Address" class="form-control" rows="2"></textarea></div>
     </div>
-
-    <div class="mb-3">
-        <label>Soyad</label>
-        <input asp-for="Employee.LastName" class="form-control" />
-        <span asp-validation-for="Employee.LastName" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label>Email</label>
-        <input asp-for="Employee.Email" class="form-control" />
-        <span asp-validation-for="Employee.Email" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label>Departman</label>
-        <select asp-for="Employee.DepartmentId"
-                asp-items="Model.Departments"
-                class="form-select">
-            <option value="0">Seçiniz</option>
-        </select>
-        <span asp-validation-for="Employee.DepartmentId" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label>Pozisyon</label>
-        <select asp-for="Employee.PositionId"
-                asp-items="Model.Positions"
-                class="form-select">
-            <option value="0">Seçiniz</option>
-        </select>
-        <span asp-validation-for="Employee.PositionId" class="text-danger"></span>
-    </div>
-
-    <button class="btn btn-primary">
-        Kaydet
-    </button>
-
+    <button class="btn btn-primary mt-3">Kaydet</button>
 </form>
-
-@section Scripts
-{
-    <partial name="_ValidationScriptsPartial" />
-}
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

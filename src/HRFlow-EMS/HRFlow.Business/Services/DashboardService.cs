@@ -21,6 +21,7 @@ namespace HRFlow.Business.Services
         private readonly IAnnouncementService _announcementService;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUser;
+        private readonly IEmployeeService _employeeService;
 
         public DashboardService(
             IDepartmentRepository departmentRepository,
@@ -28,6 +29,7 @@ namespace HRFlow.Business.Services
             IEmployeeRepository employeeRepository,
             ILeaveRequestRepository leaveRequestRepository,
             IAnnouncementService announcementService,
+            IEmployeeService employeeService,
             ICurrentUserService currentUser,
             IMapper mapper)
         {
@@ -36,6 +38,7 @@ namespace HRFlow.Business.Services
             _positionRepository = positionRepository;
             _leaveRequestRepository = leaveRequestRepository;
             _announcementService = announcementService;
+            _employeeService = employeeService;
             _currentUser = currentUser;
             _mapper = mapper;
         }
@@ -76,7 +79,8 @@ namespace HRFlow.Business.Services
                 TodayOnLeaveCount = await _leaveRequestRepository.GetTodayOnLeaveCountAsync(),
                 PendingLeaveRequests = _mapper.Map<List<PendingLeaveDto>>(await _leaveRequestRepository.GetPendingLeaveRequestsAsync(5)),
                 UpcomingLeaveRequests = _mapper.Map<List<UpcomingLeaveDto>>(await _leaveRequestRepository.GetUpcomingLeaveRequestsAsync(5)),
-                Announcements = await _announcementService.GetActiveDashboardAnnouncementsAsync(5)
+                Announcements = await _announcementService.GetActiveDashboardAnnouncementsAsync(5),
+                UpcomingBirthdays = await _employeeService.GetUpcomingBirthdaysAsync()
             };
         }
 
@@ -88,7 +92,8 @@ namespace HRFlow.Business.Services
                 ApprovedLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Approved),
                 RejectedLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Rejected),
                 CancelledLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Cancelled),
-                Announcements = await _announcementService.GetActiveDashboardAnnouncementsAsync(5)
+                Announcements = await _announcementService.GetActiveDashboardAnnouncementsAsync(5),
+                UpcomingBirthdays = await _employeeService.GetUpcomingBirthdaysAsync()
             };
         }
 
@@ -102,7 +107,8 @@ namespace HRFlow.Business.Services
                 ApprovedLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Approved, employeeId),
                 RejectedLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Rejected, employeeId),
                 CancelledLeaveCount = await _leaveRequestRepository.GetLeaveRequestCountByStatusAsync(HRFlow.Common.Enums.LeaveStatus.Cancelled, employeeId),
-                Announcements = await _announcementService.GetActiveDashboardAnnouncementsAsync(5)
+                Announcements = await _announcementService.GetActiveDashboardAnnouncementsAsync(5),
+                UpcomingBirthdays = await _employeeService.GetUpcomingBirthdaysAsync()
             };
         }
     }

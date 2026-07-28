@@ -1,105 +1,86 @@
+@using HRFlow.Common.Constants
 @model HRFlow.Web.Models.Account.ProfileViewModel
 
 @{
     ViewData["Title"] = "Profilim";
+    var imagePath = string.IsNullOrWhiteSpace(Model.Profile.ProfileImagePath) ? "/adminlte/dist/assets/img/user2-160x160.jpg" : Model.Profile.ProfileImagePath;
+    var canUpdateProfile = User.IsInRole(Roles.Admin) || User.IsInRole(Roles.HR);
 }
 
-<div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="mb-0 fs-3">Profilim</h1>
-</div>
+<h1 class="mb-3 fs-3">Profilim</h1>
 
-<div class="card mb-4">
-    <div class="card-header">
-        <h3 class="card-title fw-semibold">Profil Bilgileri</h3>
-    </div>
-
-    <div class="card-body">
-        <div class="row g-3">
-            <div class="col-12">
-                <h5 class="mb-0">Kimlik Bilgileri</h5>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Ad Soyad</label>
-                <input value="@Model.Profile.FullName" class="form-control" readonly />
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Kullanıcı Adı</label>
-                <input value="@Model.Profile.UserName" class="form-control" readonly />
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">E-posta</label>
-                <input value="@Model.Profile.Email" class="form-control" readonly />
-            </div>
-
-            <div class="col-12 pt-2">
-                <h5 class="mb-0">Çalışan Bilgileri</h5>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Departman</label>
-                <input value="@Model.Profile.DepartmentName" class="form-control" readonly />
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Pozisyon</label>
-                <input value="@Model.Profile.PositionName" class="form-control" readonly />
-            </div>
-
-            <div class="col-12 pt-2">
-                <h5 class="mb-0">Diğer</h5>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Sistemdeki Rolü</label>
-                <input value="@Model.Profile.RoleName" class="form-control" readonly />
+@if (canUpdateProfile)
+{
+    <form asp-action="UpdateProfile" method="post">
+        <div class="card mb-4">
+            <div class="card-header"><h3 class="card-title fw-semibold">Kişisel Bilgiler</h3></div>
+            <div class="card-body">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-md-2 text-center"><img src="@imagePath" alt="@Model.Profile.FullName" class="img-circle" style="width:100px;height:100px;object-fit:cover;" /></div>
+                    <div class="col-md-5"><label class="form-label">Ad</label><input value="@Model.Profile.FirstName" class="form-control" readonly /></div>
+                    <div class="col-md-5"><label class="form-label">Soyad</label><input value="@Model.Profile.LastName" class="form-control" readonly /></div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4"><label class="form-label">Doğum Tarihi</label><input value="@(Model.Profile.BirthDate?.ToString("dd.MM.yyyy"))" class="form-control" readonly /></div>
+                    <div class="col-md-4"><label asp-for="ProfileUpdate.PhoneNumber" class="form-label">Telefon Numarası</label><input asp-for="ProfileUpdate.PhoneNumber" class="form-control" /><span asp-validation-for="ProfileUpdate.PhoneNumber" class="text-danger"></span></div>
+                    <div class="col-md-4"><label asp-for="ProfileUpdate.PersonalEmail" class="form-label">Kişisel E-posta</label><input asp-for="ProfileUpdate.PersonalEmail" class="form-control" /><span asp-validation-for="ProfileUpdate.PersonalEmail" class="text-danger"></span></div>
+                </div>
             </div>
         </div>
+        <div class="card mb-4">
+            <div class="card-header"><h3 class="card-title fw-semibold">Adres Bilgileri</h3></div>
+            <div class="card-body"><div class="row g-3">
+                <div class="col-md-6"><label asp-for="ProfileUpdate.Address" class="form-label">Adres</label><textarea asp-for="ProfileUpdate.Address" class="form-control" rows="2"></textarea></div>
+                <div class="col-md-2"><label asp-for="ProfileUpdate.City" class="form-label">Şehir</label><input asp-for="ProfileUpdate.City" class="form-control" /></div>
+                <div class="col-md-2"><label asp-for="ProfileUpdate.District" class="form-label">İlçe</label><input asp-for="ProfileUpdate.District" class="form-control" /></div>
+                <div class="col-md-2"><label asp-for="ProfileUpdate.PostalCode" class="form-label">Posta Kodu</label><input asp-for="ProfileUpdate.PostalCode" class="form-control" /><span asp-validation-for="ProfileUpdate.PostalCode" class="text-danger"></span></div>
+            </div></div>
+            <div class="card-footer text-end"><button type="submit" class="btn btn-primary">Kaydet</button></div>
+        </div>
+    </form>
+}
+else
+{
+    <div class="card mb-4">
+        <div class="card-header"><h3 class="card-title fw-semibold">Kişisel Bilgiler</h3></div>
+        <div class="card-body"><div class="row g-3 align-items-center">
+            <div class="col-md-2 text-center"><img src="@imagePath" alt="@Model.Profile.FullName" class="img-circle" style="width:100px;height:100px;object-fit:cover;" /></div>
+            <div class="col-md-5"><label class="form-label">Ad</label><input value="@Model.Profile.FirstName" class="form-control" readonly /></div>
+            <div class="col-md-5"><label class="form-label">Soyad</label><input value="@Model.Profile.LastName" class="form-control" readonly /></div>
+            <div class="col-md-4"><label class="form-label">Doğum Tarihi</label><input value="@(Model.Profile.BirthDate?.ToString("dd.MM.yyyy"))" class="form-control" readonly /></div>
+            <div class="col-md-4"><label class="form-label">Telefon Numarası</label><input value="@Model.Profile.PhoneNumber" class="form-control" readonly /></div>
+            <div class="col-md-4"><label class="form-label">Kişisel E-posta</label><input value="@Model.Profile.PersonalEmail" class="form-control" readonly /></div>
+        </div></div>
     </div>
+    <div class="card mb-4">
+        <div class="card-header"><h3 class="card-title fw-semibold">Adres Bilgileri</h3></div>
+        <div class="card-body"><div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Adres</label><textarea class="form-control" rows="2" readonly>@Model.Profile.Address</textarea></div>
+            <div class="col-md-2"><label class="form-label">Şehir</label><input value="@Model.Profile.City" class="form-control" readonly /></div>
+            <div class="col-md-2"><label class="form-label">İlçe</label><input value="@Model.Profile.District" class="form-control" readonly /></div>
+            <div class="col-md-2"><label class="form-label">Posta Kodu</label><input value="@Model.Profile.PostalCode" class="form-control" readonly /></div>
+        </div></div>
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-header"><h3 class="card-title fw-semibold">Çalışma Bilgileri</h3></div>
+    <div class="card-body"><div class="row g-3">
+        <div class="col-md-3"><label class="form-label">Departman</label><input value="@Model.Profile.DepartmentName" class="form-control" readonly /></div>
+        <div class="col-md-3"><label class="form-label">Pozisyon</label><input value="@Model.Profile.PositionName" class="form-control" readonly /></div>
+        <div class="col-md-3"><label class="form-label">İşe Başlama Tarihi</label><input value="@Model.Profile.HireDate.ToString("dd.MM.yyyy")" class="form-control" readonly /></div>
+        <div class="col-md-3"><label class="form-label">Şirket E-postası</label><input value="@Model.Profile.Email" class="form-control" readonly /></div>
+    </div></div>
 </div>
 
 <div class="card">
-    <div class="card-header">
-        <h3 class="card-title fw-semibold">Şifre Değiştir</h3>
-    </div>
-
-    <form asp-action="ChangePassword" method="post">
-        <div class="card-body">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label asp-for="ChangePassword.CurrentPassword" class="form-label"></label>
-                    <input asp-for="ChangePassword.CurrentPassword" class="form-control" />
-                    <span asp-validation-for="ChangePassword.CurrentPassword" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-4">
-                    <label asp-for="ChangePassword.NewPassword" class="form-label"></label>
-                    <input asp-for="ChangePassword.NewPassword" class="form-control" />
-                    <span asp-validation-for="ChangePassword.NewPassword" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-4">
-                    <label asp-for="ChangePassword.ConfirmNewPassword" class="form-label"></label>
-                    <input asp-for="ChangePassword.ConfirmNewPassword" class="form-control" />
-                    <span asp-validation-for="ChangePassword.ConfirmNewPassword" class="text-danger"></span>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-footer text-end">
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-check-circle me-1"></i>
-                Kaydet
-            </button>
-        </div>
-    </form>
+    <div class="card-header"><h3 class="card-title fw-semibold">Hesap — Şifre Değiştir</h3></div>
+    <form asp-action="ChangePassword" method="post"><div class="card-body"><div class="row g-3">
+        <div class="col-md-4"><label asp-for="ChangePassword.CurrentPassword" class="form-label"></label><input asp-for="ChangePassword.CurrentPassword" class="form-control" /><span asp-validation-for="ChangePassword.CurrentPassword" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="ChangePassword.NewPassword" class="form-label"></label><input asp-for="ChangePassword.NewPassword" class="form-control" /><span asp-validation-for="ChangePassword.NewPassword" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="ChangePassword.ConfirmNewPassword" class="form-label"></label><input asp-for="ChangePassword.ConfirmNewPassword" class="form-control" /><span asp-validation-for="ChangePassword.ConfirmNewPassword" class="text-danger"></span></div>
+    </div></div><div class="card-footer text-end"><button type="submit" class="btn btn-primary">Şifreyi Değiştir</button></div></form>
 </div>
 
-@section Scripts
-{
-    <partial name="_ValidationScriptsPartial" />
-}
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
