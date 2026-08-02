@@ -71,6 +71,8 @@ namespace HRFlow.Web.Helpers
             ["Account:Login"] = new("Sign In", "Account"),
             ["Account:Logout"] = new("Sign Out", "Account"),
             ["Account:AccessDenied"] = new("Access Denied", "Account"),
+            ["Notification:Index"] = new("Bildirimlerim", null),
+            ["Notification:Open"] = new("Bildirimlerim", null),
             ["Home:Index"] = new("Home", null),
             ["Home:Privacy"] = new("Privacy", null),
             ["Home:Error"] = new("Error", null)

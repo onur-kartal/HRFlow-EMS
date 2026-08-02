@@ -8,6 +8,7 @@ using HRFlow.Data.Repositories;
 using HRFlow.Entities.HumanResources;
 using HRFlow.Entities.Identity;
 using HRFlow.Entities.Organization;
+using HRFlow.Entities.Logging;
 using HRFlow.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -97,6 +98,9 @@ namespace HRFlow.Web.Extensions
             services.AddScoped<IAuditLogService, AuditLogService>();
             services.AddScoped<IRequestLogRepository, RequestLogRepository>();
             services.AddScoped<IRequestLogService, RequestLogService>();
+            services.AddScoped<IGenericRepository<Notification>, NotificationRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<INotificationService, NotificationService>();
 
             services.AddScoped<IAccountService, AccountService>();
 

@@ -16,18 +16,20 @@ namespace HRFlow.Business.Services
         private readonly ICurrentUserService _currentUser;
         private readonly IMapper _mapper;
         private readonly IAuditLogService _auditLogService;
+        private readonly INotificationService _notificationService;
 
         public AnnouncementService(
             IGenericRepository<Announcement> repository,
             IAnnouncementRepository announcementRepository,
             ICurrentUserService currentUser,
-            IMapper mapper, IAuditLogService auditLogService)
+            IMapper mapper, IAuditLogService auditLogService, INotificationService notificationService)
             : base(repository)
         {
             _announcementRepository = announcementRepository;
             _currentUser = currentUser;
             _mapper = mapper;
             _auditLogService = auditLogService;
+            _notificationService = notificationService;
         }
 
         public async Task<List<AnnouncementListDto>> GetAnnouncementListAsync()
@@ -54,6 +56,7 @@ namespace HRFlow.Business.Services
             await _repository.AddAsync(announcement);
             await _repository.SaveChangesAsync();
             await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.Announcement, Action=AuditAction.Created, EntityId=announcement.Id, Description="Duyuru oluşturuldu." });
+            await NotifyPublishedAsync(announcement);
         }
 
         public async Task<AnnouncementUpdateDto?> GetByIdForUpdateAsync(int id)
@@ -112,6 +115,10 @@ namespace HRFlow.Business.Services
             _repository.Update(announcement);
             await _repository.SaveChangesAsync();
             await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.Announcement, Action=AuditAction.StatusChanged, EntityId=announcement.Id, Description=announcement.IsActive ? "Duyuru aktif duruma alındı." : "Duyuru pasif duruma alındı." });
+            if (announcement.IsActive)
+            {
+                await NotifyPublishedAsync(announcement);
+            }
         }
 
         public async Task<List<AnnouncementDashboardDto>> GetActiveDashboardAnnouncementsAsync(int count)
@@ -131,6 +138,23 @@ namespace HRFlow.Business.Services
         {
             if (!_currentUser.IsInRole(Roles.Admin) && !_currentUser.IsInRole(Roles.HR))
                 throw new UnauthorizedAccessException("Bu işlem için yetkiniz bulunmuyor.");
+        }
+
+        private Task NotifyPublishedAsync(Announcement announcement)
+        {
+            if (!announcement.IsActive)
+            {
+                return Task.CompletedTask;
+            }
+
+            return _notificationService.CreateForActiveUsersAsync(
+                "Yeni Duyuru",
+                $"“{announcement.Title}” başlıklı yeni bir duyuru yayınlandı.",
+                NotificationType.Announcement,
+                "/Dashboard",
+                AuditModule.Announcement,
+                announcement.Id,
+                NotificationEventType.AnnouncementPublished);
         }
     }
 }

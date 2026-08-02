@@ -14,17 +14,20 @@ namespace HRFlow.Business.Services
         private readonly ICurrentUserService _currentUser;
         private readonly IAuditLogService _auditLogService;
         private readonly IMapper _mapper;
+        private readonly INotificationService _notificationService;
 
         public EmployeePayrollService(
             IEmployeePayrollRepository employeePayrollRepository,
             ICurrentUserService currentUser,
             IAuditLogService auditLogService,
-            IMapper mapper)
+            IMapper mapper,
+            INotificationService notificationService)
         {
             _employeePayrollRepository = employeePayrollRepository;
             _currentUser = currentUser;
             _auditLogService = auditLogService;
             _mapper = mapper;
+            _notificationService = notificationService;
         }
 
         public async Task<List<EmployeePayrollListDto>> GetManagementListAsync()
@@ -127,6 +130,16 @@ namespace HRFlow.Business.Services
                 AuditAction.MarkedAsPaid,
                 payroll.Id,
                 "Çalışan bordrosu ödendi olarak işaretlendi.");
+
+            await _notificationService.CreateForEmployeeAsync(
+                payroll.EmployeeId,
+                "Bordro",
+                "Bordronuz ödendi olarak işaretlendi.",
+                NotificationType.Payroll,
+                "/EmployeePayroll/MyPayrolls",
+                AuditModule.Payroll,
+                payroll.Id,
+                NotificationEventType.PayrollPaid);
         }
 
         public async Task<List<MyPayrollListDto>> GetMyPayrollsAsync()

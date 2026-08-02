@@ -17,18 +17,20 @@ namespace HRFlow.Business.Services
         private readonly ICurrentUserService _currentUser;
         private readonly IMapper _mapper;
         private readonly IAuditLogService _auditLogService;
+        private readonly INotificationService _notificationService;
 
         public OvertimeRequestService(
             IGenericRepository<OvertimeRequest> repository,
             IOvertimeRequestRepository overtimeRequestRepository,
             ICurrentUserService currentUser,
-            IMapper mapper, IAuditLogService auditLogService)
+            IMapper mapper, IAuditLogService auditLogService, INotificationService notificationService)
             : base(repository)
         {
             _overtimeRequestRepository = overtimeRequestRepository;
             _currentUser = currentUser;
             _mapper = mapper;
             _auditLogService = auditLogService;
+            _notificationService = notificationService;
         }
 
         public async Task CreateAsync(OvertimeRequestCreateDto dto)
@@ -106,6 +108,8 @@ namespace HRFlow.Business.Services
             if (overtimeRequest == null)
                 throw new Exception("Fazla mesai talebi bulunamadı.");
 
+            var previousStatus = overtimeRequest.Status;
+
             if (IsAdmin())
             {
                 overtimeRequest.Status = OvertimeStatus.Cancelled;
@@ -127,6 +131,7 @@ namespace HRFlow.Business.Services
             _repository.Update(overtimeRequest);
             await _repository.SaveChangesAsync();
             await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.OvertimeRequest, Action=AuditAction.Cancelled, EntityId=overtimeRequest.Id, Description="Fazla mesai talebi iptal edildi." });
+            await NotifyStatusChangeAsync(overtimeRequest, previousStatus);
         }
 
         public async Task ChangeStatusAsync(OvertimeRequestStatusChangeDto dto)
@@ -138,6 +143,7 @@ namespace HRFlow.Business.Services
             if (overtimeRequest == null)
                 throw new Exception("Fazla mesai talebi bulunamadı.");
 
+            var previousStatus = overtimeRequest.Status;
             overtimeRequest.Status = dto.Status;
 
             if (dto.Status == OvertimeStatus.Approved)
@@ -153,6 +159,7 @@ namespace HRFlow.Business.Services
             _repository.Update(overtimeRequest);
             await _repository.SaveChangesAsync();
             await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.OvertimeRequest, Action=AuditAction.StatusChanged, EntityId=overtimeRequest.Id, Description="Fazla mesai talebinin durumu değiştirildi." });
+            await NotifyStatusChangeAsync(overtimeRequest, previousStatus);
         }
 
         private async Task UpdatePendingRequestStatusAsync(int id, OvertimeStatus status)
@@ -167,6 +174,7 @@ namespace HRFlow.Business.Services
             if (!IsAdmin() && overtimeRequest.Status != OvertimeStatus.Pending)
                 throw new Exception("Sadece bekleyen fazla mesai talepleri üzerinde işlem yapılabilir.");
 
+            var previousStatus = overtimeRequest.Status;
             overtimeRequest.Status = status;
 
             if (status == OvertimeStatus.Approved)
@@ -182,6 +190,7 @@ namespace HRFlow.Business.Services
             _repository.Update(overtimeRequest);
             await _repository.SaveChangesAsync();
             await _auditLogService.LogAsync(new AuditLogCreateDto { Module=AuditModule.OvertimeRequest, Action=status == OvertimeStatus.Approved ? AuditAction.Approved : AuditAction.Rejected, EntityId=overtimeRequest.Id, Description=status == OvertimeStatus.Approved ? "Fazla mesai talebi onaylandı." : "Fazla mesai talebi reddedildi." });
+            await NotifyStatusChangeAsync(overtimeRequest, previousStatus);
         }
 
         private void ClearApprovalInformation(OvertimeRequest overtimeRequest)
@@ -221,6 +230,46 @@ namespace HRFlow.Business.Services
         {
             if (!IsEmployee() && !IsManagerOrHr())
                 throw new UnauthorizedAccessException("Bu işlem için yetkiniz bulunmuyor.");
+        }
+
+        private Task NotifyStatusChangeAsync(OvertimeRequest overtimeRequest, OvertimeStatus previousStatus)
+        {
+            if (previousStatus == overtimeRequest.Status)
+            {
+                return Task.CompletedTask;
+            }
+
+            return overtimeRequest.Status switch
+            {
+                OvertimeStatus.Approved => _notificationService.CreateForEmployeeAsync(
+                    overtimeRequest.EmployeeId,
+                    "Fazla Mesai Talebi",
+                    "Fazla mesai talebiniz onaylandı.",
+                    NotificationType.Overtime,
+                    "/OvertimeRequest/MyRequests",
+                    AuditModule.OvertimeRequest,
+                    overtimeRequest.Id,
+                    NotificationEventType.OvertimeApproved),
+                OvertimeStatus.Rejected => _notificationService.CreateForEmployeeAsync(
+                    overtimeRequest.EmployeeId,
+                    "Fazla Mesai Talebi",
+                    "Fazla mesai talebiniz reddedildi.",
+                    NotificationType.Overtime,
+                    "/OvertimeRequest/MyRequests",
+                    AuditModule.OvertimeRequest,
+                    overtimeRequest.Id,
+                    NotificationEventType.OvertimeRejected),
+                OvertimeStatus.Cancelled => _notificationService.CreateForEmployeeAsync(
+                    overtimeRequest.EmployeeId,
+                    "Fazla Mesai Talebi",
+                    "Fazla mesai talebiniz iptal edildi.",
+                    NotificationType.Overtime,
+                    "/OvertimeRequest/MyRequests",
+                    AuditModule.OvertimeRequest,
+                    overtimeRequest.Id,
+                    NotificationEventType.OvertimeCancelled),
+                _ => Task.CompletedTask
+            };
         }
     }
 }

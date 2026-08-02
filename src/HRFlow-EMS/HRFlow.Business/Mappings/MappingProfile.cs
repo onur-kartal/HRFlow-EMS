@@ -7,9 +7,10 @@ using HRFlow.Business.DTOs.Position;
 using HRFlow.Business.DTOs.OvertimeRequest;
 using HRFlow.Business.DTOs.Announcement;
 using HRFlow.Business.DTOs.Logging;
-using HRFlow.Entities.Logging;
 using HRFlow.Entities.HumanResources;
 using HRFlow.Entities.Organization;
+using HRFlow.Business.DTOs.Notification;
+using HRFlow.Entities.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -176,6 +177,8 @@ namespace HRFlow.Business.Mappings
             CreateMap<AuditLog, AuditLogListDto>();
             CreateMap<RequestLogCreateDto, RequestLog>();
             CreateMap<RequestLog, RequestLogListDto>();
+            CreateMap<NotificationCreateDto, Notification>();
+            CreateMap<Notification, NotificationListDto>();
             CreateMap<PayrollPeriod, DTOs.Payroll.PayrollPeriodListDto>()
                 .ForMember(d => d.PayrollCount, o => o.MapFrom(s => s.EmployeePayrolls.Count));
             CreateMap<PayrollPeriod, DTOs.Payroll.PayrollPeriodDetailDto>()

@@ -17,19 +17,22 @@ namespace HRFlow.Business.Services
         private readonly IAuditLogService _auditLogService;
         private readonly ICurrentUserService _currentUser;
         private readonly IMapper _mapper;
+        private readonly INotificationService _notificationService;
 
         public PayrollPeriodService(
             IPayrollPeriodRepository payrollPeriodRepository,
             IEmployeePayrollRepository employeePayrollRepository,
             IAuditLogService auditLogService,
             ICurrentUserService currentUser,
-            IMapper mapper)
+            IMapper mapper,
+            INotificationService notificationService)
         {
             _payrollPeriodRepository = payrollPeriodRepository;
             _employeePayrollRepository = employeePayrollRepository;
             _auditLogService = auditLogService;
             _currentUser = currentUser;
             _mapper = mapper;
+            _notificationService = notificationService;
         }
 
         public async Task<List<PayrollPeriodListDto>> GetListAsync()
@@ -91,6 +94,7 @@ namespace HRFlow.Business.Services
                 throw new Exception("Sadece taslak dönemlerde bordro oluşturulabilir.");
 
             var activeEmployees = await _employeePayrollRepository.GetActiveEmployeesAsync();
+            var generatedPayrolls = new List<EmployeePayroll>();
 
             foreach (var employee in activeEmployees)
             {
@@ -121,9 +125,15 @@ namespace HRFlow.Business.Services
                 };
 
                 await _employeePayrollRepository.AddAsync(payroll);
+                generatedPayrolls.Add(payroll);
             }
 
             await _employeePayrollRepository.SaveChangesAsync();
+
+            foreach (var payroll in generatedPayrolls)
+            {
+                await NotifyPayrollCreatedAsync(payroll, payrollPeriod.Name);
+            }
 
             await LogAsync(
                 AuditAction.PayrollGenerated,
@@ -219,6 +229,7 @@ namespace HRFlow.Business.Services
                 throw new Exception("Sadece onaylı dönem ödenmiş yapılabilir.");
 
             var payrolls = await _employeePayrollRepository.GetByPeriodAsync(id);
+            var paidPayrolls = new List<EmployeePayroll>();
 
             foreach (var payroll in payrolls)
             {
@@ -230,6 +241,11 @@ namespace HRFlow.Business.Services
                 if (!employeePayroll.PaymentDate.HasValue)
                     employeePayroll.PaymentDate = DateTime.Today;
 
+                if (employeePayroll.Status != EmployeePayrollStatus.Paid)
+                {
+                    paidPayrolls.Add(employeePayroll);
+                }
+
                 employeePayroll.Status = EmployeePayrollStatus.Paid;
                 _employeePayrollRepository.Update(employeePayroll);
             }
@@ -238,6 +254,11 @@ namespace HRFlow.Business.Services
 
             _payrollPeriodRepository.Update(payrollPeriod);
             await _payrollPeriodRepository.SaveChangesAsync();
+
+            foreach (var payroll in paidPayrolls)
+            {
+                await NotifyPayrollPaidAsync(payroll, payrollPeriod.Name);
+            }
 
             await LogAsync(
                 AuditAction.MarkedAsPaid,
@@ -258,6 +279,7 @@ namespace HRFlow.Business.Services
                 throw new Exception("Bordro dönemi bulunamadı.");
 
             var payrolls = await _employeePayrollRepository.GetByPeriodAsync(id);
+            var paidPayrolls = new List<EmployeePayroll>();
 
             foreach (var payroll in payrolls)
             {
@@ -265,6 +287,11 @@ namespace HRFlow.Business.Services
 
                 if (employeePayroll == null)
                     continue;
+
+                if (status == PayrollPeriodStatus.Paid && employeePayroll.Status != EmployeePayrollStatus.Paid)
+                {
+                    paidPayrolls.Add(employeePayroll);
+                }
 
                 employeePayroll.Status = (EmployeePayrollStatus)status;
                 _employeePayrollRepository.Update(employeePayroll);
@@ -274,6 +301,11 @@ namespace HRFlow.Business.Services
 
             _payrollPeriodRepository.Update(payrollPeriod);
             await _payrollPeriodRepository.SaveChangesAsync();
+
+            foreach (var payroll in paidPayrolls)
+            {
+                await NotifyPayrollPaidAsync(payroll, payrollPeriod.Name);
+            }
 
             await LogAsync(
                 AuditAction.StatusChanged,
@@ -290,6 +322,32 @@ namespace HRFlow.Business.Services
                 EntityId = entityId,
                 Description = description
             });
+        }
+
+        private Task NotifyPayrollCreatedAsync(EmployeePayroll payroll, string periodName)
+        {
+            return _notificationService.CreateForEmployeeAsync(
+                payroll.EmployeeId,
+                "Bordro",
+                $"{periodName} bordronuz oluşturuldu.",
+                NotificationType.Payroll,
+                "/EmployeePayroll/MyPayrolls",
+                AuditModule.Payroll,
+                payroll.Id,
+                NotificationEventType.PayrollCreated);
+        }
+
+        private Task NotifyPayrollPaidAsync(EmployeePayroll payroll, string periodName)
+        {
+            return _notificationService.CreateForEmployeeAsync(
+                payroll.EmployeeId,
+                "Bordro",
+                $"{periodName} bordronuz ödendi olarak işaretlendi.",
+                NotificationType.Payroll,
+                "/EmployeePayroll/MyPayrolls",
+                AuditModule.Payroll,
+                payroll.Id,
+                NotificationEventType.PayrollPaid);
         }
 
         private void EnsureManagementAccess()

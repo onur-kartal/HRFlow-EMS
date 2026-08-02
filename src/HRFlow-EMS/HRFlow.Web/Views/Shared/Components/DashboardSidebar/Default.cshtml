@@ -29,6 +29,12 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a asp-controller="Notification" asp-action="Index" class="nav-link">
+                        <i class="nav-icon bi bi-bell-fill"></i>
+                        <p>Bildirimlerim</p>
+                    </a>
+                </li>
                 @if (User.IsInRole(HRFlow.Common.Constants.Roles.Admin) || User.IsInRole(HRFlow.Common.Constants.Roles.HR))
                 {
                     <li class="nav-item"><a href="#" class="nav-link"><i class="nav-icon bi bi-cash-stack"></i><p>Bordro Yönetimi<i class="nav-arrow bi bi-chevron-right"></i></p></a><ul class="nav nav-treeview"><li class="nav-item"><a asp-controller="PayrollPeriod" asp-action="Index" class="nav-link"><i class="nav-icon bi bi-calendar3"></i><p>Bordro Dönemleri</p></a></li><li class="nav-item"><a asp-controller="EmployeePayroll" asp-action="Index" class="nav-link"><i class="nav-icon bi bi-wallet2"></i><p>Bordrolar</p></a></li></ul></li>

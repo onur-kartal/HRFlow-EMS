@@ -1,0 +1,67 @@
+@using HRFlow.Web.Helpers
+@model List<HRFlow.Business.DTOs.Notification.NotificationListDto>
+
+@{
+    var isRead = ViewBag.IsRead as bool?;
+}
+
+<div class="card">
+    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <h3 class="card-title mb-0">Bildirimlerim</h3>
+        <form asp-action="MarkAllAsRead" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="isRead" value="@isRead" />
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-check2-all me-1"></i>Tümünü Okundu Yap
+            </button>
+        </form>
+    </div>
+    <div class="card-body border-bottom py-2">
+        <div class="btn-group" role="group" aria-label="Bildirim filtresi">
+            <a asp-action="Index" class="btn @(isRead == null ? "btn-primary" : "btn-outline-primary")">Tümü</a>
+            <a asp-action="Index" asp-route-isRead="false" class="btn @(isRead == false ? "btn-primary" : "btn-outline-primary")">Okunmamış</a>
+            <a asp-action="Index" asp-route-isRead="true" class="btn @(isRead == true ? "btn-primary" : "btn-outline-primary")">Okunmuş</a>
+        </div>
+    </div>
+    <div class="list-group list-group-flush">
+        @if (Model.Count == 0)
+        {
+            <div class="card-body text-center text-secondary">Gösterilecek bildirim bulunmuyor.</div>
+        }
+        else
+        {
+            @foreach (var notification in Model)
+            {
+                <div class="list-group-item @(notification.IsRead ? string.Empty : "bg-body-tertiary")">
+                    <div class="d-flex gap-3 align-items-start">
+                        <i class="bi @NotificationDisplayHelper.GetIcon(notification.NotificationType) @NotificationDisplayHelper.GetTextClass(notification.NotificationType) fs-4"></i>
+                        <div class="flex-grow-1">
+                            <a asp-action="Open" asp-route-id="@notification.Id" class="text-decoration-none text-body">
+                                <div class="d-flex justify-content-between gap-2">
+                                    <strong>@notification.Title</strong>
+                                    @if (!notification.IsRead)
+                                    {
+                                        <span class="badge text-bg-primary align-self-start">Yeni</span>
+                                    }
+                                </div>
+                                <div class="small mt-1">@notification.Message</div>
+                                <div class="small text-secondary mt-2">@notification.CreatedDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+                            </a>
+                        </div>
+                        @if (!notification.IsRead)
+                        {
+                            <form asp-action="MarkAsRead" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@notification.Id" />
+                                <input type="hidden" name="isRead" value="@isRead" />
+                                <button type="submit" class="btn btn-outline-secondary btn-sm" title="Okundu yap">
+                                    <i class="bi bi-check2"></i>
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

@@ -1,19 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using HRFlow.Business.Interfaces;
+using HRFlow.Web.Models.Notification;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HRFlow.Web.ViewComponents
 {
     public class DashboardNavbarViewComponent : ViewComponent
     {
-        private readonly HRFlow.Business.Interfaces.IAccountService _accountService;
+        private readonly IAccountService _accountService;
+        private readonly INotificationService _notificationService;
 
-        public DashboardNavbarViewComponent(HRFlow.Business.Interfaces.IAccountService accountService)
+        public DashboardNavbarViewComponent(
+            IAccountService accountService,
+            INotificationService notificationService)
         {
             _accountService = accountService;
+            _notificationService = notificationService;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            return View(await _accountService.GetProfileAsync());
+            return View(new NotificationNavbarViewModel
+            {
+                Profile = await _accountService.GetProfileAsync(),
+                NotificationSummary = await _notificationService.GetNavbarNotificationsAsync()
+            });
         }
     }
 }

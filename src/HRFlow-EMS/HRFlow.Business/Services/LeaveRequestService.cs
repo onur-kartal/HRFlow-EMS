@@ -23,18 +23,20 @@ namespace HRFlow.Business.Services
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUser;
         private readonly IAuditLogService _auditLogService;
+        private readonly INotificationService _notificationService;
 
         public LeaveRequestService(
             IGenericRepository<LeaveRequest> repository,
             ILeaveRequestRepository leaveRequestRepository,
             ICurrentUserService currentUser,
-            IMapper mapper, IAuditLogService auditLogService)
+            IMapper mapper, IAuditLogService auditLogService, INotificationService notificationService)
             : base(repository)
         {
             _leaveRequestRepository = leaveRequestRepository;
             _currentUser = currentUser;
             _mapper = mapper;
             _auditLogService = auditLogService;
+            _notificationService = notificationService;
         }
 
         public async Task ApproveAsync(LeaveRequestApproveDto dto)
@@ -49,6 +51,7 @@ namespace HRFlow.Business.Services
             if (!IsAdmin() && leaveRequest.Status != LeaveStatus.Pending)
                 throw new Exception("Sadece bekleyen izin talepleri onaylanabilir.");
 
+            var previousStatus = leaveRequest.Status;
             leaveRequest.Status = LeaveStatus.Approved;
             leaveRequest.ApprovedBy = _currentUser.UserId;
             leaveRequest.ApprovedDate = DateTime.UtcNow;
@@ -56,6 +59,7 @@ namespace HRFlow.Business.Services
             _repository.Update(leaveRequest);
             await _repository.SaveChangesAsync();
             await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.LeaveRequest, Action = AuditAction.Approved, EntityId = leaveRequest.Id, Description = "İzin talebi onaylandı." });
+            await NotifyStatusChangeAsync(leaveRequest, previousStatus);
         }
 
         public async Task CreateAsync(LeaveRequestCreateDto dto)
@@ -97,11 +101,13 @@ namespace HRFlow.Business.Services
             if (!IsEmployee() && !IsManagerOrHr() && !IsAdmin())
                 throw new UnauthorizedAccessException("Bu işlem için yetkiniz bulunmuyor.");
 
+            var previousStatus = leaveRequest.Status;
             leaveRequest.Status = LeaveStatus.Cancelled;
 
             _repository.Update(leaveRequest);
 
             await _repository.SaveChangesAsync();
+            await NotifyStatusChangeAsync(leaveRequest, previousStatus);
         }
 
         public async Task<LeaveRequestUpdateDto?> GetByIdForUpdateAsync(int id)
@@ -165,12 +171,14 @@ namespace HRFlow.Business.Services
             if (!IsAdmin() && leaveRequest.Status != LeaveStatus.Pending)
                 throw new Exception("Sadece bekleyen izin talepleri reddedilebilir.");
 
+            var previousStatus = leaveRequest.Status;
             leaveRequest.Status = LeaveStatus.Rejected;
             leaveRequest.ApprovedBy = null;
             leaveRequest.ApprovedDate = null;
 
             _repository.Update(leaveRequest);
             await _repository.SaveChangesAsync();
+            await NotifyStatusChangeAsync(leaveRequest, previousStatus);
             await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.LeaveRequest, Action = AuditAction.Rejected, EntityId = leaveRequest.Id, Description = "İzin talebi reddedildi." });
             await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.LeaveRequest, Action = AuditAction.Cancelled, EntityId = leaveRequest.Id, Description = "İzin talebi iptal edildi." });
         }
@@ -194,6 +202,7 @@ namespace HRFlow.Business.Services
             if (leaveRequest == null)
                 return;
 
+            var previousStatus = leaveRequest.Status;
             _mapper.Map(dto, leaveRequest);
             leaveRequest.TotalDays = (dto.EndDate.Date - dto.StartDate.Date).Days + 1;
 
@@ -212,6 +221,7 @@ namespace HRFlow.Business.Services
 
             await _repository.SaveChangesAsync();
             await _auditLogService.LogAsync(new AuditLogCreateDto { Module = AuditModule.LeaveRequest, Action = AuditAction.Updated, EntityId = leaveRequest.Id, Description = "İzin talebi güncellendi." });
+            await NotifyStatusChangeAsync(leaveRequest, previousStatus);
         }
         public async Task<List<UpcomingLeaveDto>> GetUpcomingLeaveRequestsAsync(int count)
         {
@@ -247,6 +257,46 @@ namespace HRFlow.Business.Services
         {
             if (!IsAdmin() && !IsManagerOrHr())
                 throw new UnauthorizedAccessException("Bu işlem için yetkiniz bulunmuyor.");
+        }
+
+        private Task NotifyStatusChangeAsync(LeaveRequest leaveRequest, LeaveStatus previousStatus)
+        {
+            if (previousStatus == leaveRequest.Status)
+            {
+                return Task.CompletedTask;
+            }
+
+            return leaveRequest.Status switch
+            {
+                LeaveStatus.Approved => _notificationService.CreateForEmployeeAsync(
+                    leaveRequest.EmployeeId,
+                    "İzin Talebi",
+                    "İzin talebiniz onaylandı.",
+                    NotificationType.Leave,
+                    "/LeaveRequest",
+                    AuditModule.LeaveRequest,
+                    leaveRequest.Id,
+                    NotificationEventType.LeaveApproved),
+                LeaveStatus.Rejected => _notificationService.CreateForEmployeeAsync(
+                    leaveRequest.EmployeeId,
+                    "İzin Talebi",
+                    "İzin talebiniz reddedildi.",
+                    NotificationType.Leave,
+                    "/LeaveRequest",
+                    AuditModule.LeaveRequest,
+                    leaveRequest.Id,
+                    NotificationEventType.LeaveRejected),
+                LeaveStatus.Cancelled => _notificationService.CreateForEmployeeAsync(
+                    leaveRequest.EmployeeId,
+                    "İzin Talebi",
+                    "İzin talebiniz iptal edildi.",
+                    NotificationType.Leave,
+                    "/LeaveRequest",
+                    AuditModule.LeaveRequest,
+                    leaveRequest.Id,
+                    NotificationEventType.LeaveCancelled),
+                _ => Task.CompletedTask
+            };
         }
     }
 }
