@@ -1,0 +1,56 @@
+@model List<HRFlow.Business.DTOs.Payroll.EmployeePayrollListDto>
+
+<div class="card-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h3 class="card-title mb-0">Bordrolar</h3>
+        </div>
+    </div>
+</div>
+
+<div class="card-body p-0">
+    <table id="employeePayrollTable" class="table table-bordered table-striped table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Çalışan</th>
+                <th>Departman</th>
+                <th>Pozisyon</th>
+                <th>Dönem</th>
+                <th>Net Maaş</th>
+                <th>Durum</th>
+                <th class="text-center" style="width: 110px;">İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var payroll in Model)
+            {
+                <tr>
+                    <td>@payroll.FullName</td>
+                    <td>@payroll.DepartmentName</td>
+                    <td>@payroll.PositionName</td>
+                    <td>@payroll.PeriodName</td>
+                    <td>@payroll.NetSalary</td>
+                    <td>@payroll.Status</td>
+                    <td class="text-center">
+                        <a asp-action="Details"
+                           asp-route-id="@payroll.Id"
+                           class="btn btn-sm btn-outline-primary">
+                            Detay
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts
+{
+    <script>
+        initializeDataTable('#employeePayrollTable', {
+            columnDefs: [
+                { orderable: false, targets: 6 }
+            ]
+        });
+    </script>
+}

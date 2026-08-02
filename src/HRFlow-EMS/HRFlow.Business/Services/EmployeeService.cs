@@ -47,6 +47,7 @@ namespace HRFlow.Business.Services
         {
             EnsureBirthDateIsValid(dto.BirthDate);
             var employee = _mapper.Map<Employee>(dto);
+            employee.IsActive = true;
 
             await _repository.AddAsync(employee);
 

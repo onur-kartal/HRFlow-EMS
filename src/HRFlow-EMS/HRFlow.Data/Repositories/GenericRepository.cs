@@ -1,6 +1,7 @@
 ﻿using HRFlow.Common.Interfaces;
 using HRFlow.Data.Context;
 using HRFlow.Entities.Base;
+using HRFlow.Entities.HumanResources;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -61,7 +62,10 @@ namespace HRFlow.Data.Repositories
                 baseEntity.IsDeleted = true;
                 baseEntity.DeletedDate = DateTime.UtcNow;
             }
-
+            if (entity is Employee employee)
+            {
+                employee.IsActive = false;
+            }
             _dbSet.Update(entity);
         }
 

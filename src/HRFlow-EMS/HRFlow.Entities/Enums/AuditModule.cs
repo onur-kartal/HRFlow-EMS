@@ -23,6 +23,8 @@ namespace HRFlow.Entities.Enums
         [Display(Name = "Rol")]
         Role,
         [Display(Name = "Sistem")]
-        System
+        System,
+        [Display(Name = "Bordro")]
+        Payroll = 10
     }
 }

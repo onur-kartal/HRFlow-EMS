@@ -176,6 +176,19 @@ namespace HRFlow.Business.Mappings
             CreateMap<AuditLog, AuditLogListDto>();
             CreateMap<RequestLogCreateDto, RequestLog>();
             CreateMap<RequestLog, RequestLogListDto>();
+            CreateMap<PayrollPeriod, DTOs.Payroll.PayrollPeriodListDto>()
+                .ForMember(d => d.PayrollCount, o => o.MapFrom(s => s.EmployeePayrolls.Count));
+            CreateMap<PayrollPeriod, DTOs.Payroll.PayrollPeriodDetailDto>()
+                .ForMember(d => d.PayrollCount, o => o.MapFrom(s => s.EmployeePayrolls.Count))
+                .ForMember(d => d.Payrolls, o => o.MapFrom(s => s.EmployeePayrolls));
+            CreateMap<EmployeePayroll, DTOs.Payroll.EmployeePayrollListDto>()
+                .ForMember(d => d.FullName, o => o.MapFrom(s => s.Employee.FirstName + " " + s.Employee.LastName))
+                .ForMember(d => d.DepartmentName, o => o.MapFrom(s => s.Employee.Department.Name))
+                .ForMember(d => d.PositionName, o => o.MapFrom(s => s.Employee.Position.Name))
+                .ForMember(d => d.ProfileImagePath, o => o.MapFrom(s => s.Employee.ProfileImagePath))
+                .ForMember(d => d.PeriodName, o => o.MapFrom(s => s.PayrollPeriod.Name));
+            CreateMap<EmployeePayroll, DTOs.Payroll.EmployeePayrollDetailDto>().IncludeBase<EmployeePayroll, DTOs.Payroll.EmployeePayrollListDto>();
+            CreateMap<EmployeePayroll, DTOs.Payroll.MyPayrollListDto>().IncludeBase<EmployeePayroll, DTOs.Payroll.EmployeePayrollListDto>();
         }
     }
 }

@@ -1,0 +1,44 @@
+@using HRFlow.Common.Constants
+@model HRFlow.Business.DTOs.Payroll.EmployeePayrollDetailDto
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Bordro Detayı — @Model.FullName</h3>
+    </div>
+
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3"><b>Dönem:</b> @Model.PeriodName</div>
+            <div class="col-md-3"><b>Departman:</b> @Model.DepartmentName</div>
+            <div class="col-md-3"><b>Pozisyon:</b> @Model.PositionName</div>
+            <div class="col-md-3"><b>Durum:</b> @Model.Status</div>
+            <div class="col-md-3"><b>Temel Maaş:</b> @Model.BaseSalary</div>
+            <div class="col-md-3"><b>Mesai Saati:</b> @Model.OvertimeHours</div>
+            <div class="col-md-3"><b>Mesai Tutarı:</b> @Model.OvertimeAmount</div>
+            <div class="col-md-3"><b>Prim:</b> @Model.Bonus</div>
+            <div class="col-md-3"><b>Kesinti:</b> @Model.Deduction</div>
+            <div class="col-md-3"><b>Net Maaş:</b> @Model.NetSalary</div>
+            <div class="col-md-3"><b>Ödeme Tarihi:</b> @Model.PaymentDate?.ToString("dd.MM.yyyy")</div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        @if (User.IsInRole(Roles.Admin))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Düzenle</a>
+        }
+
+        <a asp-action="ViewPdf"
+           asp-route-id="@Model.Id"
+           target="_blank"
+           class="btn btn-outline-danger">
+            PDF Görüntüle
+        </a>
+
+        <a asp-action="DownloadPdf"
+           asp-route-id="@Model.Id"
+           class="btn btn-danger">
+            PDF İndir
+        </a>
+    </div>
+</div>

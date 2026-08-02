@@ -1,0 +1,45 @@
+@model List<HRFlow.Business.DTOs.Payroll.MyPayrollListDto>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Bordrolarım</h3>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Dönem</th>
+                    <th>Temel Maaş</th>
+                    <th>Mesai</th>
+                    <th>Prim</th>
+                    <th>Kesinti</th>
+                    <th>Net Maaş</th>
+                    <th>Durum</th>
+                    <th>Ödeme Tarihi</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var payroll in Model)
+                {
+                    <tr>
+                        <td>@payroll.PeriodName</td>
+                        <td>@payroll.BaseSalary</td>
+                        <td>@payroll.OvertimeAmount</td>
+                        <td>@payroll.Bonus</td>
+                        <td>@payroll.Deduction</td>
+                        <td>@payroll.NetSalary</td>
+                        <td>@payroll.Status</td>
+                        <td>@payroll.PaymentDate?.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            <a asp-action="MyDetails"
+                               asp-route-id="@payroll.Id"
+                               class="btn btn-sm btn-outline-primary">Detay</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

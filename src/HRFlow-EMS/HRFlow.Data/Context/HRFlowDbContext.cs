@@ -36,6 +36,8 @@ namespace HRFlow.Data.Context
         public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
         public DbSet<RequestLog> RequestLogs => Set<RequestLog>();
+        public DbSet<PayrollPeriod> PayrollPeriods => Set<PayrollPeriod>();
+        public DbSet<EmployeePayroll> EmployeePayrolls => Set<EmployeePayroll>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

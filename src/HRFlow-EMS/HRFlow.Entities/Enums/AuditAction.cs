@@ -29,6 +29,12 @@ namespace HRFlow.Entities.Enums
         [Display(Name = "Rol Değiştirildi")]
         RoleChanged,
         [Display(Name = "Durum Değiştirildi")]
-        StatusChanged
+        StatusChanged,
+        [Display(Name = "Bordrolar Oluşturuldu")]
+        PayrollGenerated = 13,
+        [Display(Name = "Ödendi Olarak İşaretlendi")]
+        MarkedAsPaid = 14,
+        [Display(Name = "PDF İndirildi")]
+        PdfDownloaded = 15
     }
 }

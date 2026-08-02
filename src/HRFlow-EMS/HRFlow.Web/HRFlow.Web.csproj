@@ -39,6 +39,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.17" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
+    <PackageReference Include="QuestPDF" Version="2026.7.2" />
   </ItemGroup>
 
   <ItemGroup>

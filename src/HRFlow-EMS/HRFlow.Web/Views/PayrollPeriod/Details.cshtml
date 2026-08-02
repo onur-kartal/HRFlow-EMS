@@ -1,0 +1,84 @@
+@using HRFlow.Common.Constants
+@using HRFlow.Entities.Enums
+@model HRFlow.Business.DTOs.Payroll.PayrollPeriodDetailDto
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">@Model.Name</h3>
+
+        <div class="card-tools">
+            @if (Model.Status == PayrollPeriodStatus.Draft)
+            {
+                <form asp-action="GeneratePayrolls" method="post" class="d-inline">
+                    <input name="id" value="@Model.Id" type="hidden" />
+                    <button class="btn btn-sm btn-primary">Bordroları Oluştur</button>
+                </form>
+
+                @if (User.IsInRole(Roles.Admin))
+                {
+                    <form asp-action="Approve" method="post" class="d-inline">
+                        <input name="id" value="@Model.Id" type="hidden" />
+                        <button class="btn btn-sm btn-success">Onayla</button>
+                    </form>
+                }
+            }
+
+            @if (Model.Status == PayrollPeriodStatus.Approved && User.IsInRole(Roles.Admin))
+            {
+                <form asp-action="RevertApproval" method="post" class="d-inline">
+                    <input name="id" value="@Model.Id" type="hidden" />
+                    <button class="btn btn-sm btn-outline-secondary">Onayı Geri Al</button>
+                </form>
+
+                <form asp-action="MarkAsPaid" method="post" class="d-inline">
+                    <input name="id" value="@Model.Id" type="hidden" />
+                    <button class="btn btn-sm btn-warning">Ödendi</button>
+                </form>
+            }
+
+            @if (User.IsInRole(Roles.Admin))
+            {
+                <form asp-action="ChangeStatus" method="post" class="d-inline ms-2">
+                    <input name="id" value="@Model.Id" type="hidden" />
+                    <select name="status" class="form-select form-select-sm d-inline-block w-auto">
+                        @foreach (var status in Enum.GetValues<PayrollPeriodStatus>())
+                        {
+                            <option value="@status" selected="@(status == Model.Status)">@status</option>
+                        }
+                    </select>
+                    <button class="btn btn-sm btn-outline-primary">Durumu Güncelle</button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Çalışan</th>
+                    <th>Temel Maaş</th>
+                    <th>Mesai</th>
+                    <th>Prim</th>
+                    <th>Kesinti</th>
+                    <th>Net Maaş</th>
+                    <th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var payroll in Model.Payrolls)
+                {
+                    <tr>
+                        <td>@payroll.FullName</td>
+                        <td>@payroll.BaseSalary</td>
+                        <td>@payroll.OvertimeAmount</td>
+                        <td>@payroll.Bonus</td>
+                        <td>@payroll.Deduction</td>
+                        <td>@payroll.NetSalary</td>
+                        <td>@payroll.Status</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

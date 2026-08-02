@@ -8,6 +8,7 @@ using HRFlow.Data.Repositories;
 using HRFlow.Entities.HumanResources;
 using HRFlow.Entities.Identity;
 using HRFlow.Entities.Organization;
+using HRFlow.Web.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -79,6 +80,14 @@ namespace HRFlow.Web.Extensions
             services.AddScoped<IGenericRepository<OvertimeRequest>, OvertimeRequestRepository>();
             services.AddScoped<IOvertimeRequestRepository, OvertimeRequestRepository>();
             services.AddScoped<IOvertimeRequestService, OvertimeRequestService>();
+
+            services.AddScoped<IGenericRepository<PayrollPeriod>, PayrollPeriodRepository>();
+            services.AddScoped<IPayrollPeriodRepository, PayrollPeriodRepository>();
+            services.AddScoped<IGenericRepository<EmployeePayroll>, EmployeePayrollRepository>();
+            services.AddScoped<IEmployeePayrollRepository, EmployeePayrollRepository>();
+            services.AddScoped<IPayrollPeriodService, PayrollPeriodService>();
+            services.AddScoped<IEmployeePayrollService, EmployeePayrollService>();
+            services.AddScoped<IPayrollPdfService, PayrollPdfService>();
 
             services.AddScoped<IGenericRepository<Announcement>, AnnouncementRepository>();
             services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();

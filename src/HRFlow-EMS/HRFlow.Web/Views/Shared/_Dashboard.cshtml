@@ -1,9 +1,18 @@
 ﻿<!doctype html>
+@using HRFlow.Web.Helpers
+@{
+    var pageMetadata = PageMetadataHelper.Resolve(
+        ViewContext.RouteData.Values["controller"]?.ToString(),
+        ViewContext.RouteData.Values["action"]?.ToString(),
+        ViewData["Title"]?.ToString());
+
+    ViewData["Title"] = pageMetadata.Title;
+}
 <html lang="en">
 <!--begin::Head-->
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>HRFlow EMS | Anasayfa</title>
+    <title>@ViewData["Title"] | HRFlow EMS</title>
 
     <!--begin::Theme Init (prevents flash of incorrect theme on load, #6043)-->
     <script>
@@ -97,27 +106,7 @@
         <!--begin::App Main-->
         <main class="app-main">
             <!--begin::App Content Header-->
-            <div class="app-content-header">
-                <!--begin::Container-->
-                <div class="container-fluid">
-                    <!--begin::Row-->
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h1 class="mb-0 fs-3"></h1>
-                        </div>
-                        <div class="col-sm-6">
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb float-sm-end">
-                                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Anasayfa</li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                    <!--end::Row-->
-                </div>
-                <!--end::Container-->
-            </div>
+            <partial name="_PageHeader" model="pageMetadata" />
             <!--end::App Content Header-->
             <!--begin::App Content-->
             <div class="app-content">

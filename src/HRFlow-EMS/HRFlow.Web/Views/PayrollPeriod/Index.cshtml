@@ -1,0 +1,40 @@
+@model List<HRFlow.Business.DTOs.Payroll.PayrollPeriodListDto>
+
+<div class="card">
+    <div class="card-header">
+        <a asp-action="Create" class="btn btn-primary float-end">Yeni Dönem</a>
+        <h3 class="card-title">Bordro Dönemleri</h3>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Dönem</th>
+                    <th>Başlangıç</th>
+                    <th>Bitiş</th>
+                    <th>Durum</th>
+                    <th>Bordro</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var payrollPeriod in Model)
+                {
+                    <tr>
+                        <td>@payrollPeriod.Name</td>
+                        <td>@payrollPeriod.StartDate.ToString("dd.MM.yyyy")</td>
+                        <td>@payrollPeriod.EndDate.ToString("dd.MM.yyyy")</td>
+                        <td>@payrollPeriod.Status</td>
+                        <td>@payrollPeriod.PayrollCount</td>
+                        <td>
+                            <a asp-action="Details"
+                               asp-route-id="@payrollPeriod.Id"
+                               class="btn btn-sm btn-outline-primary">Detay</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
