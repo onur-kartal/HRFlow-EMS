@@ -27,7 +27,6 @@ namespace HRFlow.Web.Controllers
             return View(leaveRequests);
         }
         [HttpGet]
-        [Authorize(Roles = Roles.Employee)]
         public async Task<IActionResult> Create()
         {
             await LoadLeaveTypesAsync();
@@ -35,7 +34,6 @@ namespace HRFlow.Web.Controllers
             return View(new LeaveRequestCreateDto());
         }
         [HttpPost]
-        [Authorize(Roles = Roles.Employee)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(LeaveRequestCreateDto dto)
         {

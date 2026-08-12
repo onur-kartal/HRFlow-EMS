@@ -1,9 +1,10 @@
 @model List<HRFlow.Business.DTOs.Payroll.EmployeePayrollListDto>
+@using HRFlow.Web.Helpers
 
 <div class="card-header">
     <div class="row align-items-center">
         <div class="col">
-            <h3 class="card-title mb-0">Bordrolar</h3>
+            <h3 class="card-title mb-0">Çalışan Bordroları</h3>
         </div>
     </div>
 </div>
@@ -30,7 +31,7 @@
                     <td>@payroll.PositionName</td>
                     <td>@payroll.PeriodName</td>
                     <td>@payroll.NetSalary</td>
-                    <td>@payroll.Status</td>
+                    <td>@StatusDisplayHelper.GetText(payroll.Status)</td>
                     <td class="text-center">
                         <a asp-action="Details"
                            asp-route-id="@payroll.Id"

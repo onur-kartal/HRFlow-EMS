@@ -77,9 +77,9 @@ else
 <div class="card">
     <div class="card-header"><h3 class="card-title fw-semibold">Hesap — Şifre Değiştir</h3></div>
     <form asp-action="ChangePassword" method="post"><div class="card-body"><div class="row g-3">
-        <div class="col-md-4"><label asp-for="ChangePassword.CurrentPassword" class="form-label"></label><input asp-for="ChangePassword.CurrentPassword" class="form-control" /><span asp-validation-for="ChangePassword.CurrentPassword" class="text-danger"></span></div>
-        <div class="col-md-4"><label asp-for="ChangePassword.NewPassword" class="form-label"></label><input asp-for="ChangePassword.NewPassword" class="form-control" /><span asp-validation-for="ChangePassword.NewPassword" class="text-danger"></span></div>
-        <div class="col-md-4"><label asp-for="ChangePassword.ConfirmNewPassword" class="form-label"></label><input asp-for="ChangePassword.ConfirmNewPassword" class="form-control" /><span asp-validation-for="ChangePassword.ConfirmNewPassword" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="ChangePassword.CurrentPassword" class="form-label">Mevcut Şifre</label><input asp-for="ChangePassword.CurrentPassword" class="form-control" /><span asp-validation-for="ChangePassword.CurrentPassword" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="ChangePassword.NewPassword" class="form-label">Yeni Şifre</label><input asp-for="ChangePassword.NewPassword" class="form-control" /><span asp-validation-for="ChangePassword.NewPassword" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="ChangePassword.ConfirmNewPassword" class="form-label">Yeni Şifre Tekrar</label><input asp-for="ChangePassword.ConfirmNewPassword" class="form-control" /><span asp-validation-for="ChangePassword.ConfirmNewPassword" class="text-danger"></span></div>
     </div></div><div class="card-footer text-end"><button type="submit" class="btn btn-primary">Şifreyi Değiştir</button></div></form>
 </div>
 

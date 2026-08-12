@@ -17,7 +17,7 @@
     <!--end::Sidebar Brand-->
     <!--begin::Sidebar Wrapper-->
     <div class="sidebar-wrapper">
-        <nav class="mt-2" aria-label="Main navigation">
+        <nav class="mt-2" aria-label="Ana menü">
             <!--begin::Sidebar Menu-->
             <ul class="nav sidebar-menu flex-column"
                 data-lte-toggle="treeview"
@@ -119,8 +119,8 @@
 
                 @if (User.IsInRole(HRFlow.Common.Constants.Roles.Admin))
                 {
-                    <li class="nav-item"><a asp-controller="AuditLog" asp-action="Index" class="nav-link"><i class="nav-icon bi bi-journal-text"></i><p>Audit Log</p></a></li>
-                    <li class="nav-item"><a asp-controller="RequestLog" asp-action="Index" class="nav-link"><i class="nav-icon bi bi-list-check"></i><p>Request Log</p></a></li>
+                    <li class="nav-item"><a asp-controller="AuditLog" asp-action="Index" class="nav-link"><i class="nav-icon bi bi-journal-text"></i><p>Denetim Kayıtları</p></a></li>
+                    <li class="nav-item"><a asp-controller="RequestLog" asp-action="Index" class="nav-link"><i class="nav-icon bi bi-list-check"></i><p>İstek Kayıtları</p></a></li>
                     <li class="nav-item">
                         <a asp-controller="OvertimeRequest"
                            asp-action="Management"

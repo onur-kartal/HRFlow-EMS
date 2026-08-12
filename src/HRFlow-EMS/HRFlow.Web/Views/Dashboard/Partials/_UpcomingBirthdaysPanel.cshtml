@@ -15,7 +15,7 @@
                 @foreach (var employee in Model)
                 {
                     var imagePath = string.IsNullOrWhiteSpace(employee.ProfileImagePath) ? defaultAvatar : employee.ProfileImagePath;
-                    var remainingText = employee.DaysLeft switch { 0 => "Today", 1 => "Tomorrow", _ => $"{employee.DaysLeft} days left" };
+                    var remainingText = employee.DaysLeft switch { 0 => "Bugün", 1 => "Yarın", _ => $"{employee.DaysLeft} gün kaldı" };
                     <div class="list-group-item">
                         <div class="d-flex align-items-center gap-3">
                             <img src="@imagePath" alt="@employee.FullName" class="img-circle" style="width: 44px; height: 44px; object-fit: cover;" />

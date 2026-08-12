@@ -3,6 +3,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using System.Globalization;
+using HRFlow.Web.Helpers;
 
 namespace HRFlow.Web.Services
 {
@@ -48,7 +49,7 @@ namespace HRFlow.Web.Services
                             AddRow(table, "Kesinti", FormatCurrency(payroll.Deduction));
                             AddRow(table, "Net Maaş", FormatCurrency(payroll.NetSalary), true);
                             AddRow(table, "Ödeme Tarihi", payroll.PaymentDate?.ToString("dd.MM.yyyy") ?? "-");
-                            AddRow(table, "Durum", payroll.Status.ToString());
+                            AddRow(table, "Durum", StatusDisplayHelper.GetText(payroll.Status));
                         });
                     });
 

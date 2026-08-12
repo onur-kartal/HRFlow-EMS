@@ -1,5 +1,6 @@
 @using HRFlow.Common.Constants
 @using HRFlow.Common.Enums
+@using HRFlow.Web.Helpers
 @model List<HRFlow.Business.DTOs.LeaveRequest.LeaveRequestListDto>
 
 <div class="card">
@@ -41,7 +42,7 @@
                         <td>@item.LeaveTypeName</td>
                         <td>@item.StartDate.ToString("dd.MM.yyyy")</td>
                         <td>@item.EndDate.ToString("dd.MM.yyyy")</td>
-                        <td>@item.Status</td>
+                        <td>@StatusDisplayHelper.GetText(item.Status)</td>
                         <td>@item.TotalDays</td>
                         <td class="text-center">
                             @if (User.IsInRole(Roles.Admin))

@@ -1,5 +1,6 @@
 @using HRFlow.Common.Constants
 @using HRFlow.Entities.Enums
+@using HRFlow.Web.Helpers
 @model HRFlow.Business.DTOs.Payroll.PayrollPeriodDetailDto
 
 <div class="card">
@@ -43,7 +44,7 @@
                     <select name="status" class="form-select form-select-sm d-inline-block w-auto">
                         @foreach (var status in Enum.GetValues<PayrollPeriodStatus>())
                         {
-                            <option value="@status" selected="@(status == Model.Status)">@status</option>
+                            <option value="@status" selected="@(status == Model.Status)">@StatusDisplayHelper.GetText(status)</option>
                         }
                     </select>
                     <button class="btn btn-sm btn-outline-primary">Durumu Güncelle</button>
@@ -75,7 +76,7 @@
                         <td>@payroll.Bonus</td>
                         <td>@payroll.Deduction</td>
                         <td>@payroll.NetSalary</td>
-                        <td>@payroll.Status</td>
+                        <td>@StatusDisplayHelper.GetText(payroll.Status)</td>
                     </tr>
                 }
             </tbody>

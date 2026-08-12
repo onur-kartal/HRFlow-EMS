@@ -1,4 +1,5 @@
 @using HRFlow.Common.Constants
+@using HRFlow.Web.Helpers
 @model HRFlow.Business.DTOs.Payroll.EmployeePayrollDetailDto
 
 <div class="card">
@@ -11,7 +12,7 @@
             <div class="col-md-3"><b>Dönem:</b> @Model.PeriodName</div>
             <div class="col-md-3"><b>Departman:</b> @Model.DepartmentName</div>
             <div class="col-md-3"><b>Pozisyon:</b> @Model.PositionName</div>
-            <div class="col-md-3"><b>Durum:</b> @Model.Status</div>
+            <div class="col-md-3"><b>Durum:</b> @StatusDisplayHelper.GetText(Model.Status)</div>
             <div class="col-md-3"><b>Temel Maaş:</b> @Model.BaseSalary</div>
             <div class="col-md-3"><b>Mesai Saati:</b> @Model.OvertimeHours</div>
             <div class="col-md-3"><b>Mesai Tutarı:</b> @Model.OvertimeAmount</div>

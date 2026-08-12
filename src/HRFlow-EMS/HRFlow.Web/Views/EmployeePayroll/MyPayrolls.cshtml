@@ -1,4 +1,5 @@
 @model List<HRFlow.Business.DTOs.Payroll.MyPayrollListDto>
+@using HRFlow.Web.Helpers
 
 <div class="card">
     <div class="card-header">
@@ -30,7 +31,7 @@
                         <td>@payroll.Bonus</td>
                         <td>@payroll.Deduction</td>
                         <td>@payroll.NetSalary</td>
-                        <td>@payroll.Status</td>
+                        <td>@StatusDisplayHelper.GetText(payroll.Status)</td>
                         <td>@payroll.PaymentDate?.ToString("dd.MM.yyyy")</td>
                         <td>
                             <a asp-action="MyDetails"
