@@ -1,14 +1,38 @@
 # Visual Studio
 .vs/
+.vscode/
+.idea/
 
 # Build output
-bin/
-obj/
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
 
 # User-specific files
 *.user
 *.suo
+*.userosscache
+*.sln.docstates
 
-# IDE
-.vscode/
-.idea/
+# Logs
+*.log
+logs/
+
+# Test results
+TestResults/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
